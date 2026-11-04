@@ -333,6 +333,25 @@ mark{background:color-mix(in srgb, var(--yellow) 75%, transparent);color:inherit
 .glos dd button{margin-top:6px;border:none;background:none;padding:0;color:var(--accent);cursor:pointer;font-family:var(--f-mono);font-size:11px}
 .verlist{display:flex;flex-direction:column;gap:10px}
 .verlist .vi{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 14px;border:2px solid var(--ink);border-radius:var(--r);background:var(--card)}
+
+/* map editing */
+.chip#editBtn[aria-pressed="true"]{background:var(--pink);color:#1B1A2E;border-color:var(--ink)}
+.map.editing{cursor:default}
+.map.editing .hub,.map.editing .leaf,.map.editing .core,.map.editing .mnote{cursor:grab;touch-action:none}
+.map.editing .hub:active,.map.editing .leaf:active,.map.editing .core:active,.map.editing .mnote:active{cursor:grabbing}
+.mapbox:has(.map.editing){background-image:radial-gradient(var(--accent) 1.2px, transparent 1.2px);outline:3px dashed var(--pink);outline-offset:-10px}
+.sel{outline:3px dashed var(--accent)!important;outline-offset:5px}
+.linkfrom{outline:4px solid var(--pink)!important;outline-offset:5px}
+.mnote{position:absolute;width:200px;min-height:70px;padding:14px 14px 12px;background:var(--c,var(--yellow));color:#1B1A2E;border:2px solid var(--ink);border-radius:4px;box-shadow:var(--shadow);font-family:var(--f-display);font-weight:700;font-size:16px;line-height:1.25;white-space:pre-wrap;transform:rotate(-2deg);z-index:1}
+.mnote::before{content:"";position:absolute;top:-10px;left:50%;width:60px;height:16px;transform:translateX(-50%) rotate(3deg);background:color-mix(in srgb,var(--sky) 55%,transparent)}
+.edittools{position:absolute;left:14px;top:14px;right:14px;z-index:4;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 10px;background:var(--card);border:2px solid var(--ink);border-radius:16px;box-shadow:var(--shadow);max-width:calc(100% - 28px)}
+.editpanel{position:absolute;right:14px;top:78px;bottom:70px;z-index:4;width:min(320px,calc(100% - 28px));overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:14px;background:var(--paper);border:2px solid var(--ink);border-radius:18px;box-shadow:var(--shadow-lg)}
+.editpanel .field input,.editpanel .field select,.editpanel .field textarea{min-height:40px;padding:8px 10px;font-size:15px}
+.editpanel .field textarea{min-height:110px;font-family:var(--f-body)}
+.swatches{display:flex;flex-wrap:wrap;gap:8px}
+.sw{width:32px;height:32px;border-radius:50%;border:2px solid var(--ink);cursor:pointer}
+.sw.on{outline:3px solid var(--accent);outline-offset:2px}
+@media (max-width:700px){.editpanel{top:auto;bottom:10px;left:10px;right:10px;width:auto;max-height:60%}}
 /* ===== responsive ===== */
 .tocbtn{display:none}
 .dashbtn{display:none}
@@ -450,6 +469,7 @@ mark{background:color-mix(in srgb, var(--yellow) 75%, transparent);color:inherit
       <button class="chip" id="vTime" type="button" aria-pressed="false">Chronologie</button>
       <button class="chip" id="vGlos" type="button" aria-pressed="false">Glossaire</button>
       <button class="chip" id="relBtn" type="button" aria-pressed="true">Liens entre cours</button>
+      <button class="chip" id="editBtn" type="button" aria-pressed="false">✎ Modifier la carte</button>
     </div>
     <div class="row-gap"><div id="spes" class="row-gap" role="group" aria-label="Parcours"></div><div id="sems" class="row-gap" role="group" aria-label="Semestre"></div><button id="semPdf" class="btn sm" type="button">PDF du semestre</button></div>
   </div>
@@ -461,6 +481,8 @@ mark{background:color-mix(in srgb, var(--yellow) 75%, transparent);color:inherit
         <div class="maphelp mono small">Glisser pour déplacer · molette pour zoomer · survoler un cours pour ses notions · cliquer une matière pour la cibler</div>
         <div id="minimap" class="minimap" aria-hidden="true"></div>
         <div id="focusbar" class="focusbar" hidden></div>
+        <div id="edittools" class="edittools" hidden></div>
+        <div id="editpanel" class="editpanel" hidden></div>
       </div>
     </div>
     <div id="branches" class="branches"></div>
@@ -531,7 +553,7 @@ let gen = {};
 let names = {};
 let state = { view: 'map', subj: null, course: null, tab: 'cours', section: null };
 const PAL = ['var(--pink)', 'var(--sky)', 'var(--yellow)', 'var(--green)', 'var(--orange)', 'var(--purple)'];
-const subjColor = (s) => PAL[Math.max(0, DB.subjects.indexOf(s)) % PAL.length];
+const subjColor = (s) => s.color || PAL[Math.max(0, DB.subjects.indexOf(s)) % PAL.length];
 const STATUS = [['', 'À voir'], ['vu', 'Vu'], ['revise', 'Révisé'], ['maitrise', 'Maîtrisé']];
 const RANK = { '': 0, vu: 1, revise: 2, maitrise: 3 };
 
@@ -667,7 +689,7 @@ function renderStats() {
 function leafBtn(s, c, hit, q, pos) {
   const st = me.progress[c.id] || '';
   const cls = 'leaf' + (st ? ' st-' + st : '') + (hit ? ' hit' : '') + (q && !hit ? ' dim' : '') + (c.added ? ' new' : '');
-  const b = el('button', { class: cls, type: 'button', style: pos || null, onclick: (e) => { if (mapMoved) { e.preventDefault(); return; } go({ view: 'course', subj: s.id, course: c.id }); } }, [
+  const b = el('button', { class: cls, type: 'button', style: pos || null, onclick: (e) => { if (mapMoved || (editMode && e.currentTarget.closest('#map'))) { e.preventDefault(); return; } go({ view: 'course', subj: s.id, course: c.id }); } }, [
     el('span', { class: 'tag' }, [el('span', { text: c.tag || 'Cours' }), el('span', { text: me.fav.includes(c.id) ? '★' : (STATUS.find((x) => x[0] === st) || STATUS[0])[1] })]), c.short || c.title
   ]);
   b.style.setProperty('--c', subjColor(s));
@@ -675,86 +697,127 @@ function leafBtn(s, c, hit, q, pos) {
 }
 
 let firstMap = true;
+let editMode = false, mapDirty = false, undoStack = [], linkFrom = null, selNode = null, rafPending = false;
+const LAYOUT = () => { DB.layout = DB.layout || {}; const L = DB.layout; L.hubs = L.hubs || {}; L.leaves = L.leaves || {}; L.notes = L.notes || []; L.center = L.center || {}; return L; };
+const EXTRA_COLORS = ['#FF6B6B', '#00C2B8', '#C4F25B', '#B9B4FF', '#F7A8D8', '#BDBDBD'];
+function pushUndo() { undoStack.push(JSON.stringify({ subjects: DB.subjects, layout: DB.layout || null })); if (undoStack.length > 60) undoStack.shift(); }
+function undo() { const u = undoStack.pop(); if (!u) { toast('Rien à annuler'); return; } const d = JSON.parse(u); DB.subjects = d.subjects; DB.layout = d.layout || undefined; mapDirty = true; selNode = null; renderMain(); renderEditPanel(); }
+function scheduleMap() { if (rafPending) return; rafPending = true; requestAnimationFrame(() => { rafPending = false; renderMap(); }); }
 function renderMap() {
   const subs = DB.subjects.filter(inSem);
   const q = query.trim().toLowerCase();
   const map = $('#map'); map.replaceChildren();
+  map.classList.toggle('editing', editMode);
+  const L = DB.layout || { hubs: {}, leaves: {}, notes: [], center: {} };
+  const Lh = L.hubs || {}, Ll = L.leaves || {}, Ln = L.notes || [], Lc = L.center || {};
   const total = subs.reduce((n, s) => n + s.courses.length, 0);
   const grow = Math.max(1, Math.sqrt(total / 8));
   const RH = 300 * Math.max(1, grow * 0.9), RL = 520 * grow;
-  const W = Math.round(RL * 2 + 360), H = Math.round(RL * 1.4 + 260), cx = W / 2, cy = H / 2;
-  map.style.width = W + 'px'; map.style.height = H + 'px';
-  if (firstMap) map.classList.add('intro');
-  const NS = 'http://www.w3.org/2000/svg';
-  const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('width', W); svg.setAttribute('height', H); svg.setAttribute('aria-hidden', 'true');
-  const line = (x1, y1, x2, y2, cls, delay) => { const l = document.createElementNS(NS, 'line'); l.setAttribute('x1', x1); l.setAttribute('y1', y1); l.setAttribute('x2', x2); l.setAttribute('y2', y2); if (cls) l.setAttribute('class', cls); if (delay) l.style.animationDelay = delay + 'ms'; svg.append(l); return l; };
-  map.append(svg);
-  map.append(el('div', { class: 'core', style: 'left:' + cx + 'px;top:' + cy + 'px' }, [el('span', { class: 'mono', text: 'BUT MMI' + (sem !== 'all' ? ' · ' + sem : '') }), el('span', { class: 't', text: 'Mes cours' })]));
+  let W = Math.round(RL * 2 + 360), H = Math.round(RL * 1.4 + 260);
+  const cx0 = W / 2, cy0 = H / 2;
+  const cxp = Lc.x != null ? Lc.x : cx0, cyp = Lc.y != null ? Lc.y : cy0;
+  // ---- positions
   const n = Math.max(1, subs.length);
-  let hits = 0, k0 = 0;
-  const notionLayer = el('div');
   const posOf = {}, hubPos = {};
-  if (focusSubj && !subs.some((s) => s.id === focusSubj)) focusSubj = null;
-  map.classList.toggle('focus', !!focusSubj);
   subs.forEach((s, i) => {
     const a = -Math.PI / 2 + i * 2 * Math.PI / n;
-    const hx = cx + Math.cos(a) * RH, hy = cy + Math.sin(a) * RH * 0.72;
-    const col = subjColor(s);
-    line(cx, cy, hx, hy, '', 80 * i).style.setProperty('--c', col);
+    const hdx = cx0 + Math.cos(a) * RH, hdy = cy0 + Math.sin(a) * RH * 0.72;
+    const hp = Lh[s.id] ? { x: Lh[s.id].x, y: Lh[s.id].y } : { x: hdx, y: hdy };
+    hubPos[s.id] = hp;
     const k = s.courses.length;
     const span = Math.min(0.36, (2 * Math.PI / n) * 0.85 / Math.max(1, k - 1));
     s.courses.forEach((c, j) => {
       const la = a + (j - (k - 1) / 2) * span;
       const r = k > 2 && j % 2 ? 0.84 : 1;
-      const lx = cx + Math.cos(la) * RL * r, ly = cy + Math.sin(la) * RL * 0.68 * r;
-      line(hx, hy, lx, ly, 'leafline', 300 + 60 * k0).style.setProperty('--c', col);
+      const ldx = cx0 + Math.cos(la) * RL * r, ldy = cy0 + Math.sin(la) * RL * 0.68 * r;
+      posOf[c.id] = Ll[c.id] ? { x: Ll[c.id].x, y: Ll[c.id].y, s: s.id } : { x: hp.x + (ldx - hdx), y: hp.y + (ldy - hdy), s: s.id };
+    });
+  });
+  const allPts = [{ x: cxp, y: cyp }].concat(Object.values(hubPos), Object.values(posOf), Ln.map((x) => ({ x: x.x + 100, y: x.y + 60 })));
+  W = Math.max(W, ...allPts.map((p) => p.x + 280)); H = Math.max(H, ...allPts.map((p) => p.y + 220));
+  map.style.width = W + 'px'; map.style.height = H + 'px';
+  if (firstMap && !editMode) map.classList.add('intro');
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('width', W); svg.setAttribute('height', H); svg.setAttribute('aria-hidden', 'true');
+  const line = (x1, y1, x2, y2, cls, delay) => { const l = document.createElementNS(NS, 'line'); l.setAttribute('x1', x1); l.setAttribute('y1', y1); l.setAttribute('x2', x2); l.setAttribute('y2', y2); if (cls) l.setAttribute('class', cls); if (delay && !editMode) l.style.animationDelay = delay + 'ms'; svg.append(l); return l; };
+  map.append(svg);
+  // sticky notes (behind nodes)
+  Ln.forEach((nt) => {
+    const d = el('div', { class: 'mnote' + (selNode && selNode.kind === 'note' && selNode.id === nt.id ? ' sel' : ''), style: 'left:' + nt.x + 'px;top:' + nt.y + 'px;--c:' + (nt.color || 'var(--yellow)'), 'data-drag': 'note' }, [el('span', { text: nt.text || 'Post-it' })]);
+    if (editMode) d.addEventListener('pointerdown', (e) => startDrag(e, 'note', nt.id));
+    map.append(d);
+  });
+  const core = el('div', { class: 'core' + (selNode && selNode.kind === 'center' ? ' sel' : ''), style: 'left:' + cxp + 'px;top:' + cyp + 'px', 'data-drag': 'center' }, [el('span', { class: 'mono', text: (Lc.sub || 'BUT MMI') + (sem !== 'all' ? ' · ' + sem : '') }), el('span', { class: 't', text: Lc.label || 'Mes cours' })]);
+  if (editMode) core.addEventListener('pointerdown', (e) => startDrag(e, 'center', 'center'));
+  map.append(core);
+  let hits = 0, k0 = 0;
+  const notionLayer = el('div');
+  if (focusSubj && !subs.some((s) => s.id === focusSubj)) focusSubj = null;
+  map.classList.toggle('focus', !!focusSubj && !editMode);
+  subs.forEach((s, i) => {
+    const hp = hubPos[s.id];
+    const col = subjColor(s);
+    line(cxp, cyp, hp.x, hp.y, '', 80 * i).style.setProperty('--c', col);
+    const k = s.courses.length;
+    s.courses.forEach((c) => {
+      const p = posOf[c.id];
+      line(hp.x, hp.y, p.x, p.y, 'leafline', 300 + 60 * k0).style.setProperty('--c', col);
       const hit = q && textOf(c).includes(q); if (hit) hits++;
-      const b = leafBtn(s, c, hit, q, 'left:' + lx + 'px;top:' + ly + 'px;animation-delay:' + (300 + 60 * k0) + 'ms');
-      posOf[c.id] = { x: lx, y: ly, s: s.id };
-      if (focusSubj && focusSubj !== s.id) b.classList.add('out');
-      const showN = () => {
-        notionLayer.replaceChildren();
-        const ns = notionsOf(c); if (!ns.length) return;
-        const m = ns.length, base = Math.atan2(ly - cy, (lx - cx) / 1.4);
-        ns.forEach((x, t) => {
-          const aa = base + (t - (m - 1) / 2) * 0.32, rr = 190;
-          const nx = lx + Math.cos(aa) * rr * 1.25, ny = ly + Math.sin(aa) * rr * 0.75;
-          const ln = document.createElementNS(NS, 'line'); ln.setAttribute('x1', lx); ln.setAttribute('y1', ly); ln.setAttribute('x2', nx); ln.setAttribute('y2', ny); ln.setAttribute('class', 'notionline'); ln.dataset.tmp = '1'; svg.append(ln);
-          notionLayer.append(el('button', { class: 'notion', type: 'button', style: 'left:' + nx + 'px;top:' + ny + 'px', onclick: () => go({ view: 'course', subj: s.id, course: c.id, section: x.i }), text: x.h.replace(/^\d+\.\s*/, '') }));
-        });
-      };
-      const hideN = () => { setTimeout(() => { if (!notionLayer.matches(':hover') && !b.matches(':hover') && !notionLayer.contains(document.activeElement) && document.activeElement !== b) { notionLayer.replaceChildren(); svg.querySelectorAll('[data-tmp]').forEach((x) => x.remove()); } }, 220); };
-      b.addEventListener('mouseenter', () => { svg.querySelectorAll('[data-tmp]').forEach((x) => x.remove()); showN(); });
-      b.addEventListener('focus', () => { svg.querySelectorAll('[data-tmp]').forEach((x) => x.remove()); showN(); });
-      b.addEventListener('mouseleave', hideN); b.addEventListener('blur', hideN);
+      const b = leafBtn(s, c, hit, q, 'left:' + p.x + 'px;top:' + p.y + 'px;animation-delay:' + (editMode ? 0 : 300 + 60 * k0) + 'ms');
+      b.setAttribute('data-drag', 'leaf'); b.dataset.id = c.id;
+      if (focusSubj && focusSubj !== s.id && !editMode) b.classList.add('out');
+      if (editMode) {
+        if (selNode && selNode.kind === 'leaf' && selNode.id === c.id) b.classList.add('sel');
+        if (linkFrom === c.id) b.classList.add('linkfrom');
+        b.addEventListener('pointerdown', (e) => startDrag(e, 'leaf', c.id));
+      } else {
+        const lx = p.x, ly = p.y;
+        const showN = () => {
+          notionLayer.replaceChildren();
+          const ns = notionsOf(c); if (!ns.length) return;
+          const m = ns.length, base = Math.atan2(ly - cyp, (lx - cxp) / 1.4);
+          ns.forEach((x, t) => {
+            const aa = base + (t - (m - 1) / 2) * 0.32, rr = 190;
+            const nx = lx + Math.cos(aa) * rr * 1.25, ny = ly + Math.sin(aa) * rr * 0.75;
+            const ln = document.createElementNS(NS, 'line'); ln.setAttribute('x1', lx); ln.setAttribute('y1', ly); ln.setAttribute('x2', nx); ln.setAttribute('y2', ny); ln.setAttribute('class', 'notionline'); ln.dataset.tmp = '1'; svg.append(ln);
+            notionLayer.append(el('button', { class: 'notion', type: 'button', style: 'left:' + nx + 'px;top:' + ny + 'px', onclick: () => go({ view: 'course', subj: s.id, course: c.id, section: x.i }), text: x.h.replace(/^\d+\.\s*/, '') }));
+          });
+        };
+        const hideN = () => { setTimeout(() => { if (!notionLayer.matches(':hover') && !b.matches(':hover') && !notionLayer.contains(document.activeElement) && document.activeElement !== b) { notionLayer.replaceChildren(); svg.querySelectorAll('[data-tmp]').forEach((x) => x.remove()); } }, 220); };
+        b.addEventListener('mouseenter', () => { svg.querySelectorAll('[data-tmp]').forEach((x) => x.remove()); showN(); });
+        b.addEventListener('focus', () => { svg.querySelectorAll('[data-tmp]').forEach((x) => x.remove()); showN(); });
+        b.addEventListener('mouseleave', hideN); b.addEventListener('blur', hideN);
+      }
       map.append(b); k0++;
     });
     const ev = subjEvent(s.id);
     const done = s.courses.filter((c) => me.progress[c.id] === 'maitrise').length;
-    hubPos[s.id] = { x: hx, y: hy };
-    map.append(el('button', { class: 'hub' + (focusSubj && focusSubj !== s.id ? ' out' : ''), type: 'button', style: 'left:' + hx + 'px;top:' + hy + 'px;animation-delay:' + (80 * i) + 'ms;--c:' + col + ';--rot:' + (i % 2 ? '2deg' : '-2.5deg'), onclick: () => { if (mapMoved) return; if (focusSubj === s.id) go({ view: 'subj', subj: s.id }); else { focusSubj = s.id; renderMain(); focusOn(s.id); } } }, [
+    const hub = el('button', { class: 'hub' + (focusSubj && focusSubj !== s.id && !editMode ? ' out' : '') + (editMode && selNode && selNode.kind === 'hub' && selNode.id === s.id ? ' sel' : ''), type: 'button', 'data-drag': 'hub', style: 'left:' + hp.x + 'px;top:' + hp.y + 'px;animation-delay:' + (editMode ? 0 : 80 * i) + 'ms;--c:' + col + ';--rot:' + (i % 2 ? '2deg' : '-2.5deg'), onclick: () => { if (editMode || mapMoved) return; if (focusSubj === s.id) go({ view: 'subj', subj: s.id }); else { focusSubj = s.id; renderMain(); focusOn(s.id); } } }, [
       el('span', { class: 'mono', text: pad(i + 1) + ' — ' + (s.code || '') + ' · ' + SPE_LAB[speOf(s)] + ' · ' + done + '/' + k }), el('span', { class: 'n', text: s.name }),
       ev ? el('span', { class: 'badge', text: daysTo(ev.date) === 0 ? 'Auj.' : 'J-' + daysTo(ev.date) }) : null
-    ]));
+    ]);
+    if (editMode) hub.addEventListener('pointerdown', (e) => startDrag(e, 'hub', s.id));
+    map.append(hub);
   });
   notionLayer.addEventListener('mouseleave', () => { setTimeout(() => { if (!notionLayer.matches(':hover')) { notionLayer.replaceChildren(); svg.querySelectorAll('[data-tmp]').forEach((x) => x.remove()); } }, 220); });
   map.append(notionLayer);
-  if (relOn) {
-    const done = new Set();
-    Object.keys(posOf).forEach((id) => { const f = findCourse(id); (f && f.c.related || []).forEach((r) => { const k = [id, r].sort().join('|'); if (done.has(k) || !posOf[r]) return; done.add(k); const A = posOf[id], B = posOf[r]; const l = line(A.x, A.y, B.x, B.y, 'relline'); if (focusSubj && A.s !== focusSubj && B.s !== focusSubj) l.style.opacity = '.15'; }); });
+  if (relOn || editMode) {
+    const doneL = new Set();
+    Object.keys(posOf).forEach((id) => { const f = findCourse(id); (f && f.c.related || []).forEach((r) => { const kk = [id, r].sort().join('|'); if (doneL.has(kk) || !posOf[r]) return; doneL.add(kk); const A = posOf[id], B = posOf[r]; const l = line(A.x, A.y, B.x, B.y, 'relline'); if (focusSubj && !editMode && A.s !== focusSubj && B.s !== focusSubj) l.style.opacity = '.15'; }); });
   }
   if (firstMap) { setTimeout(() => map.classList.remove('intro'), 2000); firstMap = false; }
   mapSize = { W, H };
-  mapPos = { posOf, hubPos, cx, cy };
+  mapPos = { posOf, hubPos, cx: cxp, cy: cyp };
   // minimap
   const mm = $('#minimap'); mm.replaceChildren();
   const sx = 180 / W, sy = 110 / H;
   Object.values(hubPos).forEach((p) => mm.append(el('span', { class: 'd h', style: 'left:' + p.x * sx + 'px;top:' + p.y * sy + 'px' })));
   Object.values(posOf).forEach((p) => mm.append(el('span', { class: 'd', style: 'left:' + p.x * sx + 'px;top:' + p.y * sy + 'px' })));
   mm.append(el('span', { class: 'vp', id: 'mmvp' }));
+  mm.hidden = editMode;
   // focus bar
-  const fb = $('#focusbar'); fb.replaceChildren(); fb.hidden = !focusSubj;
-  if (focusSubj) { const s = DB.subjects.find((x) => x.id === focusSubj); fb.append(el('span', { class: 'mono small', text: 'Focus : ' + (s.code ? s.code + ' — ' : '') + s.name }), el('button', { class: 'btn sm solid', type: 'button', onclick: () => go({ view: 'subj', subj: s.id }), text: 'Ouvrir la matière' }), el('button', { class: 'btn sm', type: 'button', onclick: () => { focusSubj = null; renderMain(); fitMap(); }, text: 'Quitter le focus' })); }
+  const fb = $('#focusbar'); fb.replaceChildren(); fb.hidden = !focusSubj || editMode;
+  if (focusSubj && !editMode) { const s = DB.subjects.find((x) => x.id === focusSubj); fb.append(el('span', { class: 'mono small', text: 'Focus : ' + (s.code ? s.code + ' — ' : '') + s.name }), el('button', { class: 'btn sm solid', type: 'button', onclick: () => go({ view: 'subj', subj: s.id }), text: 'Ouvrir la matière' }), el('button', { class: 'btn sm', type: 'button', onclick: () => { focusSubj = null; renderMain(); fitMap(); }, text: 'Quitter le focus' })); }
   if (!mapFitted) fitMap(); else applyT();
   // mobile branches
   const br = $('#branches'); br.replaceChildren();
@@ -764,6 +827,188 @@ function renderMap() {
   ])));
   return hits;
 }
+
+/* =================== map editing =================== */
+function nodePos(kind, id) {
+  if (kind === 'leaf') return mapPos.posOf[id];
+  if (kind === 'hub') return mapPos.hubPos[id];
+  if (kind === 'center') return { x: mapPos.cx, y: mapPos.cy };
+  const nt = LAYOUT().notes.find((x) => x.id === id); return nt ? { x: nt.x, y: nt.y } : null;
+}
+function setNodePos(kind, id, x, y) {
+  const L = LAYOUT(); x = Math.max(60, Math.round(x)); y = Math.max(50, Math.round(y));
+  if (kind === 'leaf') L.leaves[id] = { x, y };
+  else if (kind === 'center') { L.center.x = x; L.center.y = y; }
+  else if (kind === 'note') { const nt = L.notes.find((n) => n.id === id); if (nt) { nt.x = x; nt.y = y; } }
+  else if (kind === 'hub') {
+    const cur = mapPos.hubPos[id]; const dx = x - cur.x, dy = y - cur.y;
+    const s = DB.subjects.find((z) => z.id === id);
+    if (s) s.courses.forEach((c) => { if (L.leaves[c.id]) { L.leaves[c.id].x += dx; L.leaves[c.id].y += dy; } });
+    L.hubs[id] = { x, y };
+    mapPos.hubPos[id] = { x, y };
+  }
+}
+function startDrag(e, kind, id) {
+  if (!editMode || e.button > 0) return;
+  e.preventDefault(); e.stopPropagation();
+  const p0 = nodePos(kind, id); if (!p0) return;
+  const sx = e.clientX, sy = e.clientY; let moved = false;
+  const mv = (ev) => {
+    const dx = (ev.clientX - sx) / T.k, dy = (ev.clientY - sy) / T.k;
+    if (!moved && Math.hypot(ev.clientX - sx, ev.clientY - sy) < 5) return;
+    if (!moved) { moved = true; pushUndo(); }
+    setNodePos(kind, id, p0.x + dx, p0.y + dy); scheduleMap();
+  };
+  const up = () => {
+    window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up);
+    if (!moved) { clickNode(kind, id); return; }
+    if (kind === 'leaf') {
+      const p = LAYOUT().leaves[id]; const f = findCourse(id);
+      const target = Object.keys(mapPos.hubPos).find((sid) => { const h = mapPos.hubPos[sid]; return sid !== (f && f.s.id) && Math.hypot(h.x - p.x, h.y - p.y) < 110; });
+      if (f && target) { const ns = DB.subjects.find((z) => z.id === target); f.s.courses = f.s.courses.filter((c) => c.id !== id); ns.courses.push(f.c); delete LAYOUT().leaves[id]; toast('Cours déplacé dans ' + ns.name); }
+    }
+    mapDirty = true; renderMap(); updateEditUi(); if (selNode) renderEditPanel();
+  };
+  window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
+}
+function clickNode(kind, id) {
+  if (kind === 'leaf' && linkFrom !== null) {
+    if (linkFrom && linkFrom !== id) {
+      pushUndo();
+      const A = findCourse(linkFrom), B = findCourse(id);
+      if (A && B) {
+        A.c.related = A.c.related || []; B.c.related = B.c.related || [];
+        const has = A.c.related.includes(id) || B.c.related.includes(linkFrom);
+        if (has) { A.c.related = A.c.related.filter((r) => r !== id); B.c.related = B.c.related.filter((r) => r !== linkFrom); toast('Lien supprimé'); }
+        else { A.c.related.push(id); B.c.related.push(linkFrom); toast('Lien créé'); }
+        mapDirty = true;
+      }
+      linkFrom = ''; renderMap(); updateEditUi(); return;
+    }
+    linkFrom = id; renderMap(); updateEditUi(); return;
+  }
+  selNode = { kind, id }; renderMap(); renderEditPanel();
+}
+function swatches(cur, onPick) {
+  return el('div', { class: 'swatches', role: 'group', 'aria-label': 'Couleur' }, PAL.concat(EXTRA_COLORS).map((c) => el('button', { type: 'button', class: 'sw' + (cur === c ? ' on' : ''), style: 'background:' + c, 'aria-label': 'Couleur ' + c.replace('var(--', '').replace(')', ''), 'aria-pressed': String(cur === c), onclick: () => onPick(c) })));
+}
+function edField(id, label, value, onInput, type) {
+  const i = el(type === 'area' ? 'textarea' : 'input', { id, type: type === 'area' ? null : 'text', autocomplete: 'off' });
+  i.value = value || '';
+  let undoPushed = false;
+  i.addEventListener('input', () => { if (!undoPushed) { pushUndo(); undoPushed = true; } onInput(i.value); mapDirty = true; scheduleMap(); updateEditUi(); });
+  return el('div', { class: 'field' }, [el('label', { for: id, text: label }), i]);
+}
+function newCourseIn(s) {
+  pushUndo();
+  let cid = s.id + '-nouveau'; while (findCourse(cid)) cid += '-2';
+  s.courses.push({ id: cid, tag: 'Cours', short: 'Nouveau cours', title: 'Nouveau cours', objectif: '', source: '', notion: '', date: '', related: [], added: today(), addedBy: uid || '', sections: [{ h: 'Contenu', b: [['p', 'À compléter : clique sur « Modifier le contenu ».']] }] });
+  mapDirty = true; selNode = { kind: 'leaf', id: cid }; renderMain(); renderEditPanel();
+}
+function renderEditPanel() {
+  const P = $('#editpanel'); if (!P) return;
+  P.replaceChildren(); P.hidden = !editMode || !selNode;
+  if (!editMode || !selNode) return;
+  const close = el('button', { class: 'btn sm', type: 'button', 'aria-label': 'Fermer le panneau', onclick: () => { selNode = null; renderMap(); renderEditPanel(); }, text: '✕' });
+  const head = (t) => el('div', { class: 'bar', style: 'padding-block:0 8px;border-bottom:2px dashed var(--rule)' }, [el('strong', { text: t }), close]);
+  const L = LAYOUT();
+  if (selNode.kind === 'hub') {
+    const s = DB.subjects.find((x) => x.id === selNode.id); if (!s) { selNode = null; P.hidden = true; return; }
+    let armed = false;
+    const del = el('button', { class: 'btn sm danger', type: 'button', onclick: () => {
+      if (!armed) { armed = true; del.textContent = s.courses.length ? 'Confirmer : supprimer avec ses ' + s.courses.length + ' cours' : 'Confirmer la suppression'; return; }
+      pushUndo(); DB.subjects = DB.subjects.filter((x) => x !== s); delete L.hubs[s.id]; s.courses.forEach((c) => delete L.leaves[c.id]);
+      flat().forEach((x) => { if (x.c.related) x.c.related = x.c.related.filter((r) => !s.courses.some((c) => c.id === r)); });
+      selNode = null; mapDirty = true; renderMain(); renderEditPanel();
+    }, text: 'Supprimer la matière' });
+    const speSel = el('select', { id: 'ep-spe' }, Object.keys(SPE_LAB).map((k) => el('option', { value: k, text: SPE_LAB[k] }))); speSel.value = speOf(s);
+    speSel.addEventListener('change', () => { pushUndo(); s.spe = speSel.value; mapDirty = true; renderMain(); updateEditUi(); });
+    P.append(head('Matière'),
+      edField('ep-name', 'Nom sur la carte', s.name, (v) => { s.name = v; }),
+      edField('ep-code', 'Code', s.code, (v) => { s.code = v; }),
+      edField('ep-full', 'Nom complet', s.full, (v) => { s.full = v; }),
+      el('div', { class: 'two' }, [edField('ep-sem', 'Semestre', s.sem || 'S3', (v) => { s.sem = v; }), el('div', { class: 'field' }, [el('label', { for: 'ep-spe', text: 'Parcours' }), speSel])]),
+      el('div', { class: 'field' }, [el('span', { class: 'lbl', text: 'Couleur' }), swatches(s.color || subjColor(s), (c) => { pushUndo(); s.color = c; mapDirty = true; renderMain(); renderEditPanel(); })]),
+      el('div', { class: 'row-gap' }, [el('button', { class: 'btn sm solid', type: 'button', onclick: () => newCourseIn(s), text: '+ Cours ici' }), L.hubs[s.id] ? el('button', { class: 'btn sm', type: 'button', onclick: () => { pushUndo(); delete L.hubs[s.id]; s.courses.forEach((c) => delete L.leaves[c.id]); mapDirty = true; renderMap(); updateEditUi(); }, text: 'Replacer auto' }) : null]),
+      del);
+  } else if (selNode.kind === 'leaf') {
+    const f = findCourse(selNode.id); if (!f) { selNode = null; P.hidden = true; return; }
+    const { c, s } = f;
+    const mv = el('select', { id: 'ep-move' }, DB.subjects.map((x) => el('option', { value: x.id, text: x.code ? x.code + ' — ' + x.name : x.name }))); mv.value = s.id;
+    mv.addEventListener('change', () => { const ns = DB.subjects.find((x) => x.id === mv.value); if (!ns || ns === s) return; pushUndo(); s.courses = s.courses.filter((x) => x.id !== c.id); ns.courses.push(c); delete L.leaves[c.id]; mapDirty = true; renderMain(); renderEditPanel(); });
+    const others = flat().filter((x) => x.c.id !== c.id);
+    const rel = el('div', { class: 'checks', style: 'max-height:150px;overflow-y:auto;padding:6px;border:2px solid var(--rule);border-radius:10px' }, others.map((x) => { const cb = el('input', { type: 'checkbox', checked: (c.related || []).includes(x.c.id) ? true : null }); cb.addEventListener('change', () => { pushUndo(); c.related = (c.related || []).filter((r) => r !== x.c.id); x.c.related = (x.c.related || []).filter((r) => r !== c.id); if (cb.checked) { c.related.push(x.c.id); x.c.related.push(c.id); } mapDirty = true; renderMap(); updateEditUi(); }); return el('label', null, [cb, (x.s.code || x.s.name) + ' · ' + (x.c.short || x.c.title)]); }));
+    let armed = false;
+    const del = el('button', { class: 'btn sm danger', type: 'button', onclick: () => { if (!armed) { armed = true; del.textContent = 'Confirmer la suppression'; return; } pushUndo(); s.courses = s.courses.filter((x) => x.id !== c.id); delete L.leaves[c.id]; flat().forEach((x) => { if (x.c.related) x.c.related = x.c.related.filter((r) => r !== c.id); }); selNode = null; mapDirty = true; renderMain(); renderEditPanel(); }, text: 'Supprimer le cours' });
+    P.append(head('Cours'),
+      edField('ep-short', 'Titre sur la carte', c.short, (v) => { c.short = v; }),
+      edField('ep-tag', 'Étiquette', c.tag, (v) => { c.tag = v; }),
+      edField('ep-title', 'Titre complet', c.title, (v) => { c.title = v; }),
+      el('div', { class: 'field' }, [el('label', { for: 'ep-move', text: 'Matière' }), mv]),
+      el('div', { class: 'field' }, [el('span', { class: 'lbl', text: 'Liens vers d’autres cours' }), rel]),
+      el('div', { class: 'row-gap' }, [el('button', { class: 'btn sm', type: 'button', onclick: async () => { if (mapDirty && !(await saveMap())) return; go({ view: 'edit', subj: s.id, course: c.id }); }, text: 'Modifier le contenu' }), L.leaves[c.id] ? el('button', { class: 'btn sm', type: 'button', onclick: () => { pushUndo(); delete L.leaves[c.id]; mapDirty = true; renderMap(); updateEditUi(); }, text: 'Replacer auto' }) : null]),
+      del);
+  } else if (selNode.kind === 'center') {
+    P.append(head('Centre de la carte'),
+      edField('ep-clabel', 'Texte principal', L.center.label || 'Mes cours', (v) => { L.center.label = v; }),
+      edField('ep-csub', 'Petit texte', L.center.sub || 'BUT MMI', (v) => { L.center.sub = v; }));
+  } else if (selNode.kind === 'note') {
+    const nt = L.notes.find((x) => x.id === selNode.id); if (!nt) { selNode = null; P.hidden = true; return; }
+    P.append(head('Post-it'),
+      edField('ep-note', 'Texte', nt.text, (v) => { nt.text = v; }, 'area'),
+      el('div', { class: 'field' }, [el('span', { class: 'lbl', text: 'Couleur' }), swatches(nt.color || 'var(--yellow)', (c) => { pushUndo(); nt.color = c; mapDirty = true; renderMap(); renderEditPanel(); })]),
+      el('button', { class: 'btn sm danger', type: 'button', onclick: () => { pushUndo(); L.notes = L.notes.filter((x) => x !== nt); selNode = null; mapDirty = true; renderMap(); renderEditPanel(); updateEditUi(); }, text: 'Supprimer le post-it' }));
+  }
+}
+async function saveMap() {
+  const ok = await saveCourses('Carte enregistrée');
+  if (ok) { mapDirty = false; updateEditUi(); }
+  return ok;
+}
+function updateEditUi() {
+  const tb = $('#edittools'); if (!tb) return;
+  tb.hidden = !editMode;
+  $('#editBtn').textContent = editMode ? 'Terminer' : '✎ Modifier la carte';
+  $('#editBtn').setAttribute('aria-pressed', String(editMode));
+  if (!editMode) return;
+  tb.replaceChildren(
+    el('button', { class: 'btn sm', type: 'button', onclick: () => {
+      pushUndo(); let id = 'matiere'; let k = 1; while (DB.subjects.some((x) => x.id === id + '-' + k)) k++; id += '-' + k;
+      const s = { id, code: '', name: 'Nouvelle matière', full: 'Nouvelle matière', sem: sem !== 'all' ? sem : 'S3', spe: spe === 'both' ? 'commun' : spe, courses: [] };
+      DB.subjects.push(s); LAYOUT().hubs[id] = { x: Math.round(mapPos.cx + 260), y: Math.round(mapPos.cy - 40) }; mapDirty = true; selNode = { kind: 'hub', id }; renderMain(); renderEditPanel();
+    }, text: '+ Matière' }),
+    el('button', { class: 'btn sm', type: 'button', onclick: () => { pushUndo(); const L = LAYOUT(); const id = 'n' + Date.now().toString(36); const b = $('#mapbox'); L.notes.push({ id, x: Math.round((-T.x + b.clientWidth / 2) / T.k), y: Math.round((-T.y + b.clientHeight / 2) / T.k), text: 'Nouveau post-it', color: 'var(--yellow)' }); mapDirty = true; selNode = { kind: 'note', id }; renderMap(); renderEditPanel(); }, text: '+ Post-it' }),
+    el('button', { class: 'btn sm', type: 'button', 'aria-pressed': String(linkFrom !== null), onclick: () => { linkFrom = linkFrom === null ? '' : null; renderMap(); updateEditUi(); }, text: linkFrom === null ? '⇄ Lier des cours' : (linkFrom ? 'Clique le 2e cours…' : 'Clique un 1er cours…') }),
+    el('button', { class: 'btn sm', type: 'button', disabled: undoStack.length ? null : true, onclick: undo, text: '↶ Annuler' }),
+    autoBtn(),
+    el('button', { class: 'btn sm solid', type: 'button', disabled: mapDirty ? null : true, onclick: () => saveMap(), text: mapDirty ? 'Enregistrer' : 'Enregistré ✓' })
+  );
+}
+function autoBtn() {
+  let armed = false;
+  const b = el('button', { class: 'btn sm', type: 'button', onclick: () => { if (!armed) { armed = true; b.textContent = 'Confirmer la disposition auto'; return; } pushUndo(); const L = LAYOUT(); L.hubs = {}; L.leaves = {}; L.center = { label: L.center.label, sub: L.center.sub }; mapDirty = true; renderMap(); fitMap(); updateEditUi(); }, text: 'Disposition auto' });
+  return b;
+}
+async function toggleEdit() {
+  if (!editMode) {
+    if (!writable()) { ghAfter = null; toast('Connecte ton GitHub pour pouvoir enregistrer la carte'); go({ view: 'gh' }); return; }
+    if (view !== 'map') { view = 'map'; lsSet('atlas-view', view); }
+    editMode = true; focusSubj = null; linkFrom = null; selNode = null; undoStack = [];
+    renderMain(); updateEditUi(); renderEditPanel();
+    toast('Mode édition : glisse les bulles, clique pour modifier');
+    return;
+  }
+  if (mapDirty && !(await saveMap())) return;
+  editMode = false; linkFrom = null; selNode = null;
+  renderMain(); updateEditUi(); renderEditPanel();
+}
+document.addEventListener('keydown', (e) => {
+  if (!editMode || state.view !== 'map') return;
+  if (e.target && e.target.matches && e.target.matches('input,textarea,select')) return;
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); }
+  if ((e.key === 'Delete' || e.key === 'Backspace') && selNode && selNode.kind === 'note') { pushUndo(); LAYOUT().notes = LAYOUT().notes.filter((x) => x.id !== selNode.id); selNode = null; mapDirty = true; renderMap(); renderEditPanel(); updateEditUi(); }
+});
+window.addEventListener('beforeunload', (e) => { if (editMode && mapDirty) { e.preventDefault(); e.returnValue = ''; } });
 
 /* zoom / pan */
 let T = { x: 0, y: 0, k: 1 }, mapSize = { W: 1296, H: 820 }, mapFitted = false, mapMoved = false;
@@ -791,9 +1036,9 @@ function fitMap() { const b = $('#mapbox'); const w = b.clientWidth, h = b.clien
 function zoomAt(f, px, py) { const k = Math.min(2.5, Math.max(0.25, T.k * f)); const r = k / T.k; T.x = px - (px - T.x) * r; T.y = py - (py - T.y) * r; T.k = k; applyT(); }
 (function initPan() {
   const box = $('#mapbox'); let start = null;
-  box.addEventListener('wheel', (e) => { e.preventDefault(); const r = box.getBoundingClientRect(); zoomAt(e.deltaY < 0 ? 1.12 : 1 / 1.12, e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+  box.addEventListener('wheel', (e) => { if (e.target.closest('#editpanel')) return; e.preventDefault(); const r = box.getBoundingClientRect(); zoomAt(e.deltaY < 0 ? 1.12 : 1 / 1.12, e.clientX - r.left, e.clientY - r.top); }, { passive: false });
   const pts = new Map(); let pinch = null;
-  box.addEventListener('pointerdown', (e) => { if (e.target.closest('.zoom')) return; pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); if (pts.size === 2) { const [a, b2] = Array.from(pts.values()); pinch = { d: Math.hypot(a.x - b2.x, a.y - b2.y), k: T.k }; start = null; mapMoved = true; return; } start = { x: e.clientX, y: e.clientY, tx: T.x, ty: T.y, id: e.pointerId }; mapMoved = false; });
+  box.addEventListener('pointerdown', (e) => { if (e.target.closest('.zoom') || e.target.closest('#editpanel') || e.target.closest('#edittools') || e.target.closest('#minimap') || e.target.closest('#focusbar') || (editMode && e.target.closest('[data-drag]'))) return; pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); if (pts.size === 2) { const [a, b2] = Array.from(pts.values()); pinch = { d: Math.hypot(a.x - b2.x, a.y - b2.y), k: T.k }; start = null; mapMoved = true; return; } start = { x: e.clientX, y: e.clientY, tx: T.x, ty: T.y, id: e.pointerId }; mapMoved = false; });
   box.addEventListener('pointermove', (e) => {
     if (pts.has(e.pointerId)) pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (pinch && pts.size === 2) { const [a, b2] = Array.from(pts.values()); const d = Math.hypot(a.x - b2.x, a.y - b2.y); const r = box.getBoundingClientRect(); zoomAt((pinch.k * d / pinch.d) / T.k, (a.x + b2.x) / 2 - r.left, (a.y + b2.y) / 2 - r.top); return; }
@@ -831,7 +1076,7 @@ function renderMain() {
   const hits = renderMap();
   $('#mapView').hidden = view !== 'map'; $('#timeView').hidden = view !== 'time'; $('#glosView').hidden = view !== 'glos';
   $('#vMap').setAttribute('aria-pressed', String(view === 'map')); $('#vTime').setAttribute('aria-pressed', String(view === 'time')); $('#vGlos').setAttribute('aria-pressed', String(view === 'glos'));
-  $('#relBtn').setAttribute('aria-pressed', String(relOn)); $('#relBtn').hidden = view !== 'map';
+  $('#relBtn').setAttribute('aria-pressed', String(relOn)); $('#relBtn').hidden = view !== 'map'; $('#editBtn').hidden = view !== 'map';
   if (view === 'time') renderTimeline();
   if (view === 'glos') renderGlossary();
   const q = query.trim().toLowerCase();
@@ -856,9 +1101,10 @@ function renderMain() {
   $('#foot').textContent = DB.updated ? 'Mis à jour le ' + frDate(DB.updated) : 'Cours importés de Notion';
 }
 $('#vMap').addEventListener('click', () => { view = 'map'; lsSet('atlas-view', view); renderMain(); setTimeout(fitMap, 0); });
-$('#vTime').addEventListener('click', () => { view = 'time'; lsSet('atlas-view', view); renderMain(); });
+$('#vTime').addEventListener('click', () => { if (editMode) { toast('Termine d’abord la modification de la carte'); return; } view = 'time'; lsSet('atlas-view', view); renderMain(); });
 $('#dashBtn').addEventListener('click', () => { const d = $('#dash'); const open = d.classList.toggle('collapsed') === false; $('#dashBtn').setAttribute('aria-expanded', String(open)); $('#dashBtn').textContent = open ? 'Masquer mes stats' : 'Voir mes stats et objectifs'; });
-$('#vGlos').addEventListener('click', () => { view = 'glos'; lsSet('atlas-view', view); renderMain(); });
+$('#vGlos').addEventListener('click', () => { if (editMode) { toast('Termine d’abord la modification de la carte'); return; } view = 'glos'; lsSet('atlas-view', view); renderMain(); });
+$('#editBtn').addEventListener('click', toggleEdit);
 $('#relBtn').addEventListener('click', () => { relOn = !relOn; lsSet('atlas-rel', relOn); renderMain(); });
 $('#semPdf').addEventListener('click', () => { const list = flat().filter((x) => inSem(x.s)).map((x) => ({ c: x.c, s: x.s })); if (!list.length) { toast('Aucun cours à exporter.'); return; } exportPdf(list, 'cours-' + (sem === 'all' ? 'tous' : sem.toLowerCase()) + '.pdf'); });
 
