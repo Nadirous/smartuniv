@@ -1,0 +1,1506 @@
+{
+ "v": 2,
+ "updated": "2026-11-04",
+ "subjects": [
+  {
+   "id": "mkt",
+   "code": "R3.05",
+   "name": "Marketing",
+   "full": "R3.05 — Stratégie de communication & marketing",
+   "courses": [
+    {
+     "id": "mkt1",
+     "tag": "Séance 1",
+     "short": "L’évolution du marketing",
+     "title": "Séance 1 — L’évolution du marketing au cours de l’histoire",
+     "objectif": "Comprendre comment le marketing est passé de « faire acheter » à « comprendre, cibler et créer de la valeur ».",
+     "source": "R3.05 Séance 1 · notes du 11 sept.",
+     "notion": "https://app.notion.com/p/3ea7f715149a81c28793ceb07f7a9a23",
+     "sections": [
+      {
+       "h": "Les trois grands rôles du marketing",
+       "b": [
+        [
+         "p",
+         "Le cours fait apparaître trois fonctions : influencer, satisfaire, créer de la valeur."
+        ],
+        [
+         "p",
+         "Influencer. À la fin du XIXe siècle se développent les marques déposées, les magasins à prix unique et les agences de publicité. Le marketing est lié à la persuasion : il faut convaincre le consommateur."
+        ],
+        [
+         "p",
+         "Exemple : une entreprise lance une boisson inconnue. Identité visuelle forte, affiches, mises en scène attirantes, slogan mémorable. Le produit n’a pas changé — c’est la perception du public qui est travaillée."
+        ],
+        [
+         "note",
+         "Influencer = orienter la perception ou le comportement d’un public."
+        ],
+        [
+         "p",
+         "Satisfaire. Autour des années 1950, la société de consommation se développe. Plus d’entreprises, une concurrence forte, une offre parfois supérieure à la demande : la publicité seule ne suffit plus. L’entreprise doit comprendre ce que veut le client, ce qui le gêne, ce qui peut le séduire."
+        ],
+        [
+         "p",
+         "Créer de la valeur. Deux boutiques vendent le même ordinateur à 899 €. La boutique B ajoute installation, conseil, assistance 30 jours et retrait rapide : même produit, valeur perçue plus élevée."
+        ]
+       ]
+      },
+      {
+       "h": "La segmentation",
+       "b": [
+        [
+         "p",
+         "Tous les clients n’ont pas les mêmes besoins. Segmenter, c’est découper un marché en groupes relativement homogènes."
+        ],
+        [
+         "ul",
+         [
+          "Critères démographiques, géographiques, socio-économiques",
+          "Âge, catégorie socioprofessionnelle, revenu",
+          "Critères psychologiques, psychographiques, situationnels"
+         ]
+        ],
+        [
+         "table",
+         [
+          [
+           "Segment",
+           "Attente principale",
+           "Offre possible"
+          ],
+          [
+           "Étudiants",
+           "Prix bas",
+           "Abonnement réduit"
+          ],
+          [
+           "Actifs pressés",
+           "Gain de temps",
+           "Séances courtes"
+          ],
+          [
+           "Sportifs confirmés",
+           "Performance",
+           "Matériel spécialisé"
+          ]
+         ]
+        ],
+        [
+         "note",
+         "Segmenter = découper. Cibler = choisir le ou les groupes auxquels l’entreprise veut réellement s’adresser."
+        ]
+       ]
+      },
+      {
+       "h": "Offre et proposition de valeur",
+       "b": [
+        [
+         "p",
+         "Une bonne offre répond à une attente, est identifiable, se différencie et est jugée intéressante par le public visé."
+        ],
+        [
+         "p",
+         "La valeur perçue compare ce que le client pense obtenir et ce qu’il pense donner — et ce qu’il donne ne se limite pas au prix :"
+        ],
+        [
+         "ul",
+         [
+          "argent",
+          "temps",
+          "effort",
+          "risque",
+          "contraintes"
+         ]
+        ],
+        [
+         "p",
+         "Exemple : un service de livraison plus cher mais livré le lendemain, avec suivi et retour gratuit, peut être perçu comme ayant plus de valeur qu’un service 3 € moins cher livré en 5 jours."
+        ]
+       ]
+      },
+      {
+       "h": "L’évolution historique",
+       "b": [
+        [
+         "table",
+         [
+          [
+           "Période",
+           "Logique dominante",
+           "Idée à retenir"
+          ],
+          [
+           "Révolution industrielle",
+           "Produire en masse",
+           "Standardisation, prix accessibles"
+          ],
+          [
+           "Trente Glorieuses",
+           "Marketing de masse",
+           "Médias de masse, grande distribution"
+          ],
+          [
+           "Années 1970",
+           "Marketing segmenté",
+           "Différenciation face à la concurrence"
+          ],
+          [
+           "Années 2000",
+           "Marketing individualisé",
+           "Personnalisation, TIC, fidélisation"
+          ]
+         ]
+        ],
+        [
+         "p",
+         "Exemple chaussures : une seule pub « confortable pour tous » (masse) → messages pour runners, ados, pros, randonneurs (segmenté) → recommandation selon achats, taille et usages (individualisé)."
+        ]
+       ]
+      },
+      {
+       "h": "Les stratégies de ciblage",
+       "b": [
+        [
+         "p",
+         "Les segments ciblés doivent idéalement être distincts, accessibles, mesurables et rentables."
+        ],
+        [
+         "ul",
+         [
+          "Marketing de masse — même politique pour un vaste marché. One-to-many.",
+          "Marketing différencié — une politique adaptée à chaque segment (banque : étudiants, familles, entrepreneurs). One-to-few.",
+          "Marketing concentré — un seul segment (chaussures de trail pour coureurs expérimentés). One-to-few.",
+          "Marketing individualisé (customisation) — l’offre s’adapte à chaque client. One-to-one."
+         ]
+        ]
+       ]
+      },
+      {
+       "h": "Qu’est-ce que le marketing ?",
+       "b": [
+        [
+         "p",
+         "J.-M. Lehu : concevoir une offre en tenant compte des attentes des consommateurs, des capacités de l’entreprise et des contraintes de l’environnement (économiques, légales, culturelles, concurrentielles, sociodémographiques)."
+        ],
+        [
+         "p",
+         "American Marketing Association : créer, communiquer, distribuer, apporter de la valeur. Association Française du Marketing : échanges, équité, création de valeur pour les parties prenantes."
+        ],
+        [
+         "note",
+         "Marketing ≠ publicité seulement : analyse du marché, offre, ciblage, valeur, distribution et communication."
+        ]
+       ]
+      },
+      {
+       "h": "Influence, manipulation et morale",
+       "b": [
+        [
+         "p",
+         "Le marketing influence forcément. Une marque qui explique clairement prix, caractéristiques, avantages et limites influence, mais le consommateur garde les informations pour choisir."
+        ],
+        [
+         "p",
+         "« PLUS QUE 1 ARTICLE ! OFFRE TERMINÉE DANS 3 MINUTES ! » avec un stock et un compteur artificiels : fausse urgence, pratique potentiellement manipulatrice."
+        ],
+        [
+         "ul",
+         [
+          "Influence : persuasion, mise en valeur, communication, orientation du choix",
+          "Manipulation possible : information cachée, pression artificielle, tromperie, exploitation excessive d’émotions"
+         ]
+        ],
+        [
+         "p",
+         "Critique : le marketing peut encourager l’idée qu’acheter rend heureux. Patrick Le Lay est cité avec le « temps de cerveau humain disponible ». Une pratique peut être légale, efficace, rentable — et contestée moralement (exemple de la vente d’alcool). La question devient : « Est-ce responsable ? »"
+        ]
+       ]
+      },
+      {
+       "h": "Méthode pour analyser une entreprise",
+       "b": [
+        [
+         "ul",
+         [
+          "Quel public ?",
+          "Comment le marché est-il segmenté ?",
+          "Quelle cible est choisie ?",
+          "Comment l’entreprise influence-t-elle ?",
+          "Comment satisfait-elle ?",
+          "Quelle valeur crée-t-elle ?",
+          "Quel type de marketing utilise-t-elle ?",
+          "Certaines pratiques sont-elles manipulatrices ?",
+          "Y a-t-il une question morale ?"
+         ]
+        ],
+        [
+         "p",
+         "Travail en groupe annoncé : appliquer cette grille à une entreprise choisie. Oral d’environ 10 minutes, PowerPoint possible."
+        ]
+       ]
+      },
+      {
+       "h": "À retenir",
+       "b": [
+        [
+         "ul",
+         [
+          "Trois rôles : influencer, satisfaire, créer de la valeur.",
+          "Segmenter = découper ; cibler = choisir.",
+          "La valeur est perçue par le client.",
+          "On va du marketing de masse vers plus de segmentation et de personnalisation.",
+          "Quatre stratégies : masse, différenciée, concentrée, individualisée.",
+          "Le marketing influence, mais certaines pratiques deviennent manipulatrices.",
+          "Une pratique efficace peut être moralement discutée."
+         ]
+        ]
+       ]
+      }
+     ],
+     "date": "2026-09-11",
+     "related": [
+      "mkt2",
+      "eco2"
+     ]
+    },
+    {
+     "id": "mkt2",
+     "tag": "Séance 2",
+     "short": "La marque",
+     "title": "Séance 2 — La marque",
+     "objectif": "Identité, protection, politiques et image : comment une marque identifie, différencie et influence.",
+     "source": "Notes de cours du 30/09/2026",
+     "notion": "https://app.notion.com/p/3f17f715149a816983d3e3517b8e2a59",
+     "sections": [
+      {
+       "h": "Qu’est-ce qu’une marque ?",
+       "b": [
+        [
+         "p",
+         "Une marque peut être un nom, un terme, un signe, un symbole, un dessin ou une combinaison de ces éléments. Elle sert à identifier des biens ou des services, peut exercer une forte influence et être associée à des valeurs uniques."
+        ],
+        [
+         "note",
+         "La marque permet de reconnaître un produit, de le différencier et de lui associer des valeurs."
+        ]
+       ]
+      },
+      {
+       "h": "La signalétique de la marque",
+       "b": [
+        [
+         "p",
+         "Les signes permettant de reconnaître la marque :"
+        ],
+        [
+         "ul",
+         [
+          "Le nom — identification verbale, court et mémorisable",
+          "Les emblèmes — éléments visuels reconnaissables même sans le nom",
+          "Le packaging design — forme, étiquette, emballage",
+          "Le graphisme — palette, formes, typographie, style d’illustration constants"
+         ]
+        ],
+        [
+         "p",
+         "Exemple fictif : le café Mokaï, reconnaissable à son nom, son symbole en grain, sa typo et son emballage brun et crème."
+        ]
+       ]
+      },
+      {
+       "h": "Règlement juridique",
+       "b": [
+        [
+         "p",
+         "La marque peut être protégée par un dépôt auprès de l’Institut National de la Propriété Intellectuelle (INPI), notamment pour éviter la contrefaçon."
+        ],
+        [
+         "p",
+         "Trois conditions de validité :"
+        ],
+        [
+         "note",
+         "LDD — Licite, Distinctive, Disponible."
+        ],
+        [
+         "p",
+         "Fin du droit de marque :"
+        ],
+        [
+         "ul",
+         [
+          "absence de renouvellement à l’issue de la période décennale",
+          "renonciation du titulaire",
+          "la marque devient la désignation usuelle du produit ou du service"
+         ]
+        ]
+       ]
+      },
+      {
+       "h": "Politiques de marque",
+       "b": [
+        [
+         "ul",
+         [
+          "Marques produit / gamme — un nom spécifique pour un produit ou une gamme",
+          "Marque ombrelle — une marque mère et des marques/offres filles",
+          "Marque caution — une marque connue apporte garantie et crédibilité à une autre offre",
+          "Extension de marque (brand stretching) — le nom est étendu à une nouvelle catégorie",
+          "Alliance de marque (co-branding) — plusieurs identités associées sur une offre",
+          "Produit sans marque (MDD)"
+         ]
+        ],
+        [
+         "code",
+         "Marque mère\n├── Marque / offre fille A\n├── Marque / offre fille B\n└── Marque / offre fille C"
+        ]
+       ]
+      },
+      {
+       "h": "Création et valeur de la marque",
+       "b": [
+        [
+         "p",
+         "Sans marque = pas de stratégie de différenciation, avec un risque de produit de commodité : le choix repose alors sur le prix et la disponibilité."
+        ],
+        [
+         "p",
+         "La marque est un capital intangible : elle exprime les origines de l’entreprise, la différencie, porte des valeurs fortes, donne du sens — « l’âme de l’entreprise ». Les produits sont la preuve des valeurs portées."
+        ],
+        [
+         "note",
+         "Valeurs de marque → discours → preuves par les produits."
+        ],
+        [
+         "p",
+         "Une marque forte est « un nom qui a du pouvoir sur un marché » : elle influence clients et distributeurs et crée un avantage concurrentiel."
+        ]
+       ]
+      },
+      {
+       "h": "L’image de marque",
+       "b": [
+        [
+         "ul",
+         [
+          "Personnelle et subjective — elle dépend de la perception (moderne, trop chère, fiable…)",
+          "Stable — mais peut changer après un événement fort",
+          "Elle simplifie le processus de décision du consommateur"
+         ]
+        ]
+       ]
+      },
+      {
+       "h": "La marque dans le contexte digital",
+       "b": [
+        [
+         "p",
+         "Le digital donne un pouvoir grandissant au consommateur, qui devient expert (tests, comparaisons, avis détaillés) et influenceur (un avis ou une vidéo modifie la perception d’autres personnes)."
+        ],
+        [
+         "note",
+         "L’entreprise ne contrôle plus totalement son image : les consommateurs participent à sa construction."
+        ]
+       ]
+      },
+      {
+       "h": "À retenir",
+       "b": [
+        [
+         "ul",
+         [
+          "La marque identifie et différencie des biens ou services.",
+          "Signalétique : nom, emblèmes, packaging, graphisme.",
+          "Protection par dépôt à l’INPI ; marque licite, distinctive, disponible.",
+          "Politiques : produit/gamme, ombrelle, caution, extension, co-branding, MDD.",
+          "La marque est un capital intangible.",
+          "L’image de marque est subjective, stable et simplifie la décision.",
+          "Dans le digital, le consommateur est expert et influenceur."
+         ]
+        ]
+       ]
+      }
+     ],
+     "date": "2026-09-30",
+     "related": [
+      "mkt1"
+     ]
+    }
+   ],
+   "sem": "S3"
+  },
+  {
+   "id": "js",
+   "code": "JS & POO",
+   "name": "JavaScript",
+   "full": "Développement — JavaScript & POO",
+   "courses": [
+    {
+     "id": "js1",
+     "tag": "Cours",
+     "short": "POO JavaScript",
+     "title": "POO JavaScript — Classes, encapsulation, héritage et polymorphisme",
+     "objectif": "Savoir lire une classe, créer des objets, protéger leurs données et construire une hiérarchie avec héritage et polymorphisme.",
+     "source": "poo-javascript-but2-mmi",
+     "notion": "https://app.notion.com/p/3ea7f715149a8182aeead2bcf79b01f0",
+     "sections": [
+      {
+       "h": "Pourquoi la POO ?",
+       "b": [
+        [
+         "p",
+         "Créer des objets à la main fonctionne, mais quand le projet grandit on oublie des propriétés, on duplique du code, et ajouter un champ à 50 objets devient pénible."
+        ],
+        [
+         "note",
+         "Une classe est un moule commun : on décrit une seule fois la structure et les comportements."
+        ],
+        [
+         "code",
+         "class Media {\n  constructor(titre, duree) {\n    this.titre = titre;\n    this.duree = duree;\n    this.vues = 0;\n  }\n}\n\nconst ouverture = new Media(\"Ouverture\", 180);"
+        ]
+       ]
+      },
+      {
+       "h": "Classe, instance, constructeur et this",
+       "b": [
+        [
+         "ul",
+         [
+          "Media = la classe",
+          "ouverture = une instance",
+          "new Media(...) = l’instanciation"
+         ]
+        ],
+        [
+         "p",
+         "Le constructeur est appelé automatiquement à chaque new. Dans le constructeur, this désigne l’objet en train d’être fabriqué. Chaque instance a sa propre mémoire : modifier a.vues ne touche pas b.vues."
+        ],
+        [
+         "p",
+         "Ce que fait new : créer un objet, le relier au prototype de la classe, exécuter le constructeur, initialiser les propriétés, retourner l’objet."
+        ]
+       ]
+      },
+      {
+       "h": "Méthodes et getters",
+       "b": [
+        [
+         "code",
+         "class Media {\n  constructor(titre) {\n    this.titre = titre;\n    this.vues = 0;\n  }\n  incrementerVues() {\n    this.vues++;\n  }\n  get resume() {\n    return this.titre + \" (\" + this.vues + \" vues)\";\n  }\n}"
+        ],
+        [
+         "p",
+         "Une méthode est un comportement : pendant clip.incrementerVues(), this représente clip. Un getter se lit comme une propriété : film.dureeFormatee, jamais film.dureeFormatee()."
+        ]
+       ]
+      },
+      {
+       "h": "Instance ou static ?",
+       "b": [
+        [
+         "note",
+         "Méthode normale → un objet précis. static → la classe entière."
+        ],
+        [
+         "code",
+         "class Media {\n  static compteur = 0;\n  constructor(titre) {\n    this.titre = titre;\n    Media.compteur++;\n  }\n  static reinitialiserCompteur() {\n    Media.compteur = 0;\n  }\n}\n\nnew Media(\"A\");\nnew Media(\"B\");\nconsole.log(Media.compteur); // 2"
+        ],
+        [
+         "p",
+         "On écrit Media.compteur et non this.compteur : le compteur décrit toute la classe. clip.reinitialiserCompteur() est incorrect, on appelle Media.reinitialiserCompteur()."
+        ]
+       ]
+      },
+      {
+       "h": "Le piège de this",
+       "b": [
+        [
+         "p",
+         "this = l’objet qui appelle la méthode. Si on détache la méthode de son objet, le lien est perdu :"
+        ],
+        [
+         "code",
+         "const afficher = clip.afficherTitre;\nafficher(); // this n’est plus clip\n\nconst ok = clip.afficherTitre.bind(clip);\nok(); // \"Clip\""
+        ],
+        [
+         "p",
+         "Le problème n’est pas la fonction, c’est la manière dont elle est appelée. Solutions : .bind(...) ou les fonctions fléchées dans certains callbacks."
+        ]
+       ]
+      },
+      {
+       "h": "Encapsulation et champs privés",
+       "b": [
+        [
+         "p",
+         "Sans protection, n’importe quel code peut écrire clip.duree = -50 : on casse un invariant (une règle qui doit toujours rester vraie)."
+        ],
+        [
+         "p",
+         "Le # crée un champ réellement privé : compte.#solde depuis l’extérieur est une erreur de syntaxe. Le _ n’est qu’une convention entre développeurs."
+        ],
+        [
+         "code",
+         "class Media {\n  #duree;\n  constructor(titre, duree) {\n    this.titre = titre;\n    this.duree = duree; // passe par le setter\n  }\n  get duree() {\n    return this.#duree;\n  }\n  set duree(valeur) {\n    if (typeof valeur !== \"number\" || valeur <= 0) {\n      throw new RangeError(\"Durée invalide\");\n    }\n    this.#duree = valeur;\n  }\n}"
+        ],
+        [
+         "note",
+         "Getter = fenêtre pour regarder. Setter = porte avec contrôle de sécurité."
+        ]
+       ]
+      },
+      {
+       "h": "Trois niveaux d’accès",
+       "b": [
+        [
+         "table",
+         [
+          [
+           "Écriture",
+           "Accès extérieur",
+           "Quand l’utiliser"
+          ],
+          [
+           "this.titre",
+           "Lecture + écriture libres",
+           "Donnée sans contrainte"
+          ],
+          [
+           "#vues + getter",
+           "Lecture seule",
+           "Compteur interne"
+          ],
+          [
+           "#duree + getter + setter",
+           "Écriture contrôlée",
+           "Valeur avec une règle"
+          ]
+         ]
+        ]
+       ]
+      },
+      {
+       "h": "Héritage : extends et super()",
+       "b": [
+        [
+         "p",
+         "extends : « cette classe est une version spécialisée d’une autre ». super() : « exécute d’abord le constructeur du parent »."
+        ],
+        [
+         "code",
+         "class Video extends Media {\n  constructor(titre, auteur, duree) {\n    super(titre, auteur);\n    this.duree = duree;\n  }\n  decrire() {\n    return \"[video] \" + super.decrire() + \" (\" + this.duree + \"s)\";\n  }\n}"
+        ],
+        [
+         "note",
+         "Dans un constructeur enfant, super() doit être appelé avant d’utiliser this."
+        ],
+        [
+         "p",
+         "Redéfinir une méthode : même nom, comportement propre à l’enfant. super.decrire() réutilise la version du parent."
+        ]
+       ]
+      },
+      {
+       "h": "Polymorphisme",
+       "b": [
+        [
+         "p",
+         "Même appel, comportement différent selon l’objet réel."
+        ],
+        [
+         "code",
+         "const galerie = [\n  new Video(\"Ouverture\", \"Lina\", 180),\n  new Image(\"Affiche\", \"Sam\", \"PNG\")\n];\nfor (const media of galerie) {\n  console.log(media.decrire());\n}"
+        ],
+        [
+         "p",
+         "Ajouter une classe Podcast ne demande pas de modifier la boucle."
+        ]
+       ]
+      },
+      {
+       "h": "Héritage ou composition ?",
+       "b": [
+        [
+         "note",
+         "« est un » → héritage. « a un » → composition."
+        ],
+        [
+         "p",
+         "Une Video est un Media → class Video extends Media. Une Video a un Lecteur → this.lecteur = new Lecteur(). On évite class Video extends Lecteur."
+        ]
+       ]
+      },
+      {
+       "h": "Les sept erreurs à éviter",
+       "b": [
+        [
+         "ul",
+         [
+          "Confondre classe et instance",
+          "Oublier this. devant un attribut",
+          "Perdre this dans un callback",
+          "Croire que _attribut est réellement privé",
+          "Appeler un getter avec des parenthèses",
+          "Utiliser this avant super()",
+          "Utiliser extends pour une relation « a un »"
+         ]
+        ],
+        [
+         "p",
+         "TP annoncé : une galerie avec Media, Video, Image, Podcast et Galerie, triable par durée et par date."
+        ]
+       ]
+      }
+     ],
+     "date": "",
+     "related": [
+      "back1"
+     ]
+    }
+   ],
+   "sem": "S3"
+  },
+  {
+   "id": "back",
+   "code": "POO",
+   "name": "Backend PHP",
+   "full": "Backend — Programmation orientée objet",
+   "courses": [
+    {
+     "id": "back1",
+     "tag": "Cours",
+     "short": "POO Backend en PHP",
+     "title": "POO Backend — Objets, classes & encapsulation",
+     "objectif": "Comprendre la POO côté backend : classe, objet, private, protected, getter, setter et $this.",
+     "source": "POO.docx · 30 septembre.docx",
+     "notion": "https://app.notion.com/p/3eb7f715149a812c9135dc7f82a99b04",
+     "sections": [
+      {
+       "h": "Qu’est-ce que la POO ?",
+       "b": [
+        [
+         "p",
+         "Un paradigme qui organise le code autour d’objets réutilisables. Un objet possède des propriétés (ses données) et des méthodes (ses comportements)."
+        ],
+        [
+         "note",
+         "Objet = données + comportements."
+        ]
+       ]
+      },
+      {
+       "h": "Classe, instance, instanciation",
+       "b": [
+        [
+         "code",
+         "class Utilisateur\n{\n    public string $nom;\n\n    public function __construct(string $nom)\n    {\n        $this->nom = $nom;\n    }\n}\n\n$paul = new Utilisateur(\"Paul\");\n$sarah = new Utilisateur(\"Sarah\");"
+        ],
+        [
+         "p",
+         "new crée l’objet, envoie \"Paul\" dans $nom, exécute __construct ; $this représente le nouvel objet, $this->nom devient \"Paul\". La classe est commune, chaque instance garde ses propres données."
+        ]
+       ]
+      },
+      {
+       "h": "L’exemple Voiture du 30 septembre",
+       "b": [
+        [
+         "p",
+         "Le fragment des notes est incomplet (virgules à la place des points-virgules, méthode inachevée). Version syntaxiquement valide, sans inventer le comportement :"
+        ],
+        [
+         "code",
+         "class Voiture\n{\n    public string $nom;\n    public string $moteur;\n    public int $sport;\n\n    public function acceleration()\n    {\n        // comportement non précisé dans le cours\n    }\n}\n\n$voiture = new Voiture();\n$voiture->nom = \"Ma voiture\";"
+        ],
+        [
+         "note",
+         "Propriétés = ce que l’objet décrit. Méthode = ce que l’objet peut faire."
+        ]
+       ]
+      },
+      {
+       "h": "La visibilité",
+       "b": [
+        [
+         "table",
+         [
+          [
+           "Visibilité",
+           "Classe",
+           "Enfant",
+           "Extérieur"
+          ],
+          [
+           "public",
+           "Oui",
+           "Oui",
+           "Oui"
+          ],
+          [
+           "protected",
+           "Oui",
+           "Oui",
+           "Non"
+          ],
+          [
+           "private",
+           "Oui",
+           "Non",
+           "Non"
+          ]
+         ]
+        ],
+        [
+         "code",
+         "class Utilisateur\n{\n    protected string $role = \"membre\";\n}\n\nclass Administrateur extends Utilisateur\n{\n    public function afficherRole(): string\n    {\n        return $this->role;\n    }\n}"
+        ],
+        [
+         "p",
+         "Si role était private, Administrateur ne pourrait pas y accéder directement."
+        ]
+       ]
+      },
+      {
+       "h": "Getters et setters",
+       "b": [
+        [
+         "p",
+         "On protège les données importantes (âge négatif, prix négatif, e-mail vide…) en les cachant et en contrôlant leur lecture et leur modification : c’est l’encapsulation."
+        ],
+        [
+         "code",
+         "class Utilisateur\n{\n    private int $age;\n\n    public function getAge(): int\n    {\n        return $this->age;\n    }\n\n    public function setAge(int $age): self\n    {\n        if ($age < 0) {\n            throw new InvalidArgumentException(\"Âge invalide\");\n        }\n        $this->age = $age;\n        return $this;\n    }\n}"
+        ],
+        [
+         "p",
+         "setAge(-5) déclenche une erreur avant d’atteindre $this->age = $age : l’objet protège son propre état. return $this renvoie l’objet après modification."
+        ]
+       ]
+      },
+      {
+       "h": "Le rôle de $this",
+       "b": [
+        [
+         "p",
+         "$this représente l’objet qui exécute la méthode. $emma->getNom() → $this = $emma ; $adam->getNom() → $this = $adam. Une seule méthode fonctionne pour tous les objets de la classe."
+        ],
+        [
+         "code",
+         "Sans encapsulation :  extérieur → propriété\nAvec encapsulation :  extérieur → getter / setter → propriété privée"
+        ]
+       ]
+      },
+      {
+       "h": "Erreurs fréquentes",
+       "b": [
+        [
+         "ul",
+         [
+          "Croire que private signifie invisible partout — c’est accessible dans la classe",
+          "Confondre classe (Utilisateur) et instance ($paul)",
+          "Oublier $this-> dans une méthode",
+          "Croire qu’un getter modifie — getter = lire, setter = modifier",
+          "Tout mettre en public — ça supprime l’intérêt de l’encapsulation"
+         ]
+        ]
+       ]
+      },
+      {
+       "h": "Mini-labo",
+       "b": [
+        [
+         "p",
+         "Défi : une classe Voiture avec une marque privée, getMarque() et setMarque(), puis une vitesse qui ne peut jamais être négative."
+        ],
+        [
+         "code",
+         "private int $vitesse = 0;\n\npublic function setVitesse(int $vitesse): self\n{\n    if ($vitesse < 0) {\n        throw new InvalidArgumentException(\"Vitesse invalide\");\n    }\n    $this->vitesse = $vitesse;\n    return $this;\n}"
+        ]
+       ]
+      },
+      {
+       "h": "À retenir",
+       "b": [
+        [
+         "ul",
+         [
+          "Un objet a des propriétés et des méthodes ; une classe sert de modèle.",
+          "private = classe uniquement ; protected = classe + enfants.",
+          "Getter = lire ; setter = modifier et valider.",
+          "$this désigne l’objet courant.",
+          "L’encapsulation permet à l’objet de protéger ses données."
+         ]
+        ]
+       ]
+      }
+     ],
+     "date": "2026-09-30",
+     "related": [
+      "js1",
+      "dep1"
+     ]
+    }
+   ],
+   "sem": "S3"
+  },
+  {
+   "id": "dep",
+   "code": "R3.14",
+   "name": "Déploiement",
+   "full": "R3.14 — Déploiement de services",
+   "courses": [
+    {
+     "id": "dep1",
+     "tag": "Cours",
+     "short": "Hébergement local",
+     "title": "Hébergement local — Laragon, serveur local & PHP",
+     "objectif": "Comprendre pourquoi un site PHP ne se teste pas comme un fichier HTML, et comment Laragon ou MAMP simulent un vrai serveur.",
+     "source": "IntroHébergementLocal.pdf · 24 sept. 2026",
+     "notion": "https://app.notion.com/p/3ec7f715149a8123bcd7c698e46c8ef2",
+     "sections": [
+      {
+       "h": "HTML contre PHP",
+       "b": [
+        [
+         "p",
+         "Un fichier index.html s’ouvre directement dans Firefox. Renommé en index.php, le navigateur ne sait plus l’exécuter — même s’il ne contient que du HTML."
+        ],
+        [
+         "code",
+         "HTML ouvert directement :  Fichier → Navigateur\nPHP :                      Fichier PHP → Serveur → Navigateur"
+        ],
+        [
+         "p",
+         "Une adresse file:///C:/laragon/www/MonSite/index.html montre qu’on lit directement un fichier de l’ordinateur, sans dialoguer avec un serveur web."
+        ]
+       ]
+      },
+      {
+       "h": "Les chemins entre les pages",
+       "b": [
+        [
+         "code",
+         "MonSite/\n├── index.html\n└── enseignement/\n    └── index.html"
+        ],
+        [
+         "p",
+         "Sur un serveur, on peut envoyer vers le dossier enseignement/ : le serveur cherche alors une page d’index (index.html ou index.php)."
+        ],
+        [
+         "note",
+         "index.html ou index.php joue le rôle de page par défaut d’un dossier."
+        ]
+       ]
+      },
+      {
+       "h": "Live Preview, Laragon, MAMP",
+       "b": [
+        [
+         "table",
+         [
+          [
+           "Méthode",
+           "Petit serveur ?",
+           "PHP ?"
+          ],
+          [
+           "Double-clic sur le fichier",
+           "Non",
+           "Non"
+          ],
+          [
+           "VS Code Live Preview",
+           "Oui",
+           "Non"
+          ],
+          [
+           "Laragon / MAMP",
+           "Oui",
+           "Oui"
+          ]
+         ]
+        ],
+        [
+         "p",
+         "Laragon, MAMP, XAMPP et WAMP transforment temporairement l’ordinateur en serveur : le navigateur fait des requêtes HTTP comme vers un site en ligne, mais le serveur est sur la même machine."
+        ]
+       ]
+      },
+      {
+       "h": "L’adresse 127.0.0.1",
+       "b": [
+        [
+         "p",
+         "127.0.0.1 signifie « cet ordinateur lui-même » : on contacte son propre serveur local."
+        ],
+        [
+         "code",
+         "Navigateur → requête → 127.0.0.1 → serveur local → fichier du site → réponse"
+        ],
+        [
+         "p",
+         "L’analogie de la lettre : la donner en main propre (double-clic), la mettre sous enveloppe (Live Preview), ou la timbrer, l’adresser et la poster… à sa propre adresse (Laragon / MAMP)."
+        ]
+       ]
+      },
+      {
+       "h": "Le dossier public",
+       "b": [
+        [
+         "p",
+         "Un serveur contient aussi des fichiers système et de configuration qui ne doivent pas être servis. Les fichiers publics vont dans un dossier dédié."
+        ],
+        [
+         "code",
+         "Laragon → www     (C:/laragon/www/MonSite/)\nMAMP    → htdocs"
+        ]
+       ]
+      },
+      {
+       "h": "Local et distant",
+       "b": [
+        [
+         "p",
+         "Local : le serveur tourne sur ton ordinateur (Laragon, MAMP, 127.0.0.1). Distant : le serveur est ailleurs — illustré par une démonstration SSH vers Alwaysdata. Travailler en local permet de voir le comportement du site dans un environnement serveur avant de le mettre en ligne."
+        ],
+        [
+         "code",
+         "1. Le navigateur demande une page\n2. La demande arrive au serveur local\n3. Le serveur cherche le fichier\n4. Le serveur traite le PHP\n5. Une réponse est renvoyée\n6. Le navigateur affiche le résultat"
+        ]
+       ]
+      },
+      {
+       "h": "Pièges à éviter",
+       "b": [
+        [
+         "ul",
+         [
+          "Croire que renommer .html en .php suffit",
+          "Croire que Live Preview équivaut à Laragon",
+          "Confondre file:/// et une page servie",
+          "Oublier le rôle du dossier public",
+          "Oublier que MAMP utilise htdocs"
+         ]
+        ]
+       ]
+      },
+      {
+       "h": "À retenir",
+       "b": [
+        [
+         "ul",
+         [
+          "Firefox ne lit pas directement le PHP.",
+          "file:/// = ouverture directe d’un fichier local.",
+          "Un serveur utilise index.html ou index.php comme page d’un dossier.",
+          "Live Preview crée un petit serveur, sans PHP.",
+          "Laragon / MAMP = environnement serveur local.",
+          "127.0.0.1 désigne la machine locale.",
+          "Laragon → www ; MAMP → htdocs."
+         ]
+        ]
+       ]
+      }
+     ],
+     "date": "2026-09-24",
+     "related": [
+      "back1"
+     ]
+    }
+   ],
+   "sem": "S3"
+  },
+  {
+   "id": "eco",
+   "code": "R3.17",
+   "name": "Éco · Droit",
+   "full": "R3.17 — Économie, gestion & droit du numérique",
+   "courses": [
+    {
+     "id": "eco2",
+     "tag": "Séance 2",
+     "short": "Enquêtes & données personnelles",
+     "title": "Séance 2 — Les méthodes d’enquêtes et les données personnelles",
+     "objectif": "Mener une enquête de l’objectif jusqu’au RGPD, avec un fil rouge : la satisfaction du restaurant universitaire.",
+     "source": "R3.17 Séance 2 · notes du 25 sept.",
+     "notion": "https://app.notion.com/p/3ea7f715149a8125b496f3a1ba497c9b",
+     "sections": [
+      {
+       "h": "L’enquête et ses étapes",
+       "b": [
+        [
+         "p",
+         "Une démarche méthodologique pour recueillir des informations sur des comportements, opinions, habitudes, attitudes, expériences ou relations."
+        ],
+        [
+         "ul",
+         [
+          "Définir les objectifs et les contraintes",
+          "Choisir la population et construire l’échantillon",
+          "Préparer le questionnaire",
+          "Collecter, analyser, rédiger le rapport",
+          "Stocker et protéger les données"
+         ]
+        ]
+       ]
+      },
+      {
+       "h": "Population et échantillon",
+       "b": [
+        [
+         "ul",
+         [
+          "Population mère : ensemble dont on veut connaître les caractéristiques (5 000 étudiants)",
+          "Échantillon : sous-ensemble réellement interrogé (400 étudiants)",
+          "Unité de sondage : une personne interrogée"
+         ]
+        ],
+        [
+         "p",
+         "La précision dépend surtout de la taille absolue de l’échantillon : ~1 000 Français ou ~1 000 Belges donnent une précision comparable. La qualité dépend aussi de la sélection et du mode de collecte."
+        ]
+       ]
+      },
+      {
+       "h": "Les méthodes d’échantillonnage",
+       "b": [
+        [
+         "table",
+         [
+          [
+           "Méthode",
+           "Principe",
+           "Point fort",
+           "Limite"
+          ],
+          [
+           "Probabiliste",
+           "Sélection aléatoire",
+           "Rigueur statistique",
+           "Plus long, coûteux"
+          ],
+          [
+           "Non probabiliste",
+           "Disponibilité ou critères",
+           "Rapide, économique",
+           "Fiabilité plus faible"
+          ]
+         ]
+        ],
+        [
+         "p",
+         "Probabiliste : aléatoire simple (tirage au sort) ou systématique — base ÷ échantillon, ex. 1 000 / 200 = 5, une personne tous les 5 noms."
+        ],
+        [
+         "p",
+         "Non probabiliste : convenance (biais : on n’interroge que ceux qui sortent du RU), volontariat (les très satisfaits ou très mécontents répondent plus), quotas (60 % de 1re année → 60 sur 100)."
+        ]
+       ]
+      },
+      {
+       "h": "Les modes de collecte",
+       "b": [
+        [
+         "table",
+         [
+          [
+           "Mode",
+           "Avantages",
+           "Inconvénients"
+          ],
+          [
+           "Face à face",
+           "Explications, bon taux de réponse",
+           "Coûteux, lent, influence de l’enquêteur"
+          ],
+          [
+           "Téléphone",
+           "Rapide, large couverture",
+           "Refus, questionnaire court"
+          ],
+          [
+           "Courrier",
+           "Rythme libre, anonymat",
+           "Lent, faible taux de réponse"
+          ],
+          [
+           "En ligne",
+           "Rapide, peu coûteux, images possibles",
+           "Abandon, spam, représentativité"
+          ]
+         ]
+        ]
+       ]
+      },
+      {
+       "h": "Construire le questionnaire",
+       "b": [
+        [
+         "p",
+         "Ordre : introduction, questions simples, questions par thème, questions signalétiques à la fin. 15 à 20 questions maximum."
+        ],
+        [
+         "ul",
+         [
+          "Question ouverte — réponses riches, analyse plus difficile",
+          "Fermée à choix unique ou multiple",
+          "Échelle de type Likert — de « pas du tout d’accord » à « tout à fait d’accord »"
+         ]
+        ],
+        [
+         "p",
+         "À éviter : formulations ambiguës, questions orientées, deux questions en une (« repas délicieux et pas chers ? »), vocabulaire trop technique. Toujours prétester auprès de quelques personnes."
+        ],
+        [
+         "p",
+         "Outils : Sphinx, Ethnos, Google Forms ; puis R, Python ou SAS pour aller plus loin."
+        ]
+       ]
+      },
+      {
+       "h": "Analyser les résultats",
+       "b": [
+        [
+         "note",
+         "Tri à plat = une variable. Tri croisé = relation entre plusieurs variables."
+        ],
+        [
+         "p",
+         "Croiser satisfaction et année : 80 % de satisfaits en 1re année, 55 % en 2e — on cherche alors pourquoi."
+        ],
+        [
+         "p",
+         "L’étude qualitative (observation, entretiens directifs ou semi-directifs, focus groups, techniques créatives comme « si le RU était une personne… ») aide à comprendre le pourquoi derrière les chiffres."
+        ],
+        [
+         "p",
+         "Le rapport d’enquête : méthodologie, résultats, préconisations."
+        ]
+       ]
+      },
+      {
+       "h": "Les données de l’entreprise",
+       "b": [
+        [
+         "ul",
+         [
+          "Fichier client — informations sur les clients",
+          "Datawarehouse — regroupe plusieurs bases de l’entreprise",
+          "Datamart — partie spécialisée sur une thématique",
+          "Datamining — extraction d’informations utiles"
+         ]
+        ],
+        [
+         "p",
+         "Sources internes (fiches clients, fidélité, historique), externes (INSEE, INPI, annuaires, bases achetées) ou reconstituées. Stockage interne (serveur, NAS, disque) avec sauvegardes très régulières, ou externalisé (cloud)."
+        ]
+       ]
+      },
+      {
+       "h": "Données personnelles et RGPD",
+       "b": [
+        [
+         "p",
+         "Deux références : la loi Informatique et Libertés du 6 janvier 1978 et le RGPD, applicable depuis le 25 mai 2018."
+        ],
+        [
+         "ul",
+         [
+          "Sécurité et confidentialité — accès limités, pas de copies non autorisées",
+          "Minimisation — ne pas collecter « au cas où »",
+          "Finalité — savoir pourquoi la donnée est utilisée",
+          "Durée de conservation raisonnable, droit à l’oubli",
+          "Vigilance sur les données sensibles (origine, religion…)"
+         ]
+        ],
+        [
+         "p",
+         "Droits des personnes : information, accès, rectification, modification, suppression, portabilité, droit à l’oubli."
+        ]
+       ]
+      },
+      {
+       "h": "À retenir",
+       "b": [
+        [
+         "ul",
+         [
+          "Une enquête commence par un objectif clair.",
+          "L’échantillon se choisit avec méthode : probabiliste ou non.",
+          "Questionnaire clair, court et prétesté.",
+          "Le quantitatif mesure, le qualitatif fait comprendre.",
+          "RGPD = finalité, minimisation, sécurité, durée, droits des personnes."
+         ]
+        ]
+       ]
+      }
+     ],
+     "date": "2026-09-25",
+     "related": [
+      "mkt1"
+     ]
+    }
+   ],
+   "sem": "S3"
+  },
+  {
+   "id": "gp",
+   "code": "Agilité",
+   "name": "Gestion de projet",
+   "full": "Gestion de projet — Méthodes agiles",
+   "courses": [
+    {
+     "id": "gp1",
+     "tag": "Cours",
+     "short": "Cascade, Scrum, Kanban, XP",
+     "title": "Agilité — Cascade, Scrum, Kanban et Extreme Programming",
+     "objectif": "Voir comment un même projet — une application étudiante — se gère en cascade, avec Scrum, avec Kanban et avec XP.",
+     "source": "Notes du 08 sept.",
+     "notion": "https://app.notion.com/p/3ea7f715149a81869b34dccc59570a2b",
+     "sections": [
+      {
+       "h": "Le modèle en cascade",
+       "b": [
+        [
+         "p",
+         "Méthode traditionnelle et séquentielle : analyse des besoins, conception, développement, test et validation, mise en production."
+        ],
+        [
+         "ul",
+         [
+          "Avantages : structure claire, documentation, planning et budget prévisibles",
+          "Limites : rigidité, changements coûteux, feedback tardif, erreurs découvertes tard"
+         ]
+        ],
+        [
+         "p",
+         "Le cours cite le système informatique du FBI, Microsoft et le cycle en V. La cascade reste pertinente quand les besoins sont stables et la documentation essentielle : aéronautique, armement, pharmaceutique."
+        ],
+        [
+         "note",
+         "Cascade = planifier fortement avant de produire."
+        ]
+       ]
+      },
+      {
+       "h": "L’agilité et son manifeste",
+       "b": [
+        [
+         "p",
+         "Les méthodes agiles se développent dans les années 1990-2000 : flexibilité, collaboration, adaptation, feedback continu, livraison progressive. En 2001, 17 experts rédigent le Manifeste Agile et ses 12 principes."
+        ],
+        [
+         "ul",
+         [
+          "Satisfaire le client en livrant vite quelque chose d’utile",
+          "Accepter le changement, même tard",
+          "Livrer fréquemment",
+          "Collaborer métier et développement",
+          "Faire confiance et communiquer directement",
+          "Mesurer avec un produit qui fonctionne",
+          "Garder un rythme soutenable et une bonne qualité technique",
+          "Simplifier, favoriser l’autonomie, s’améliorer"
+         ]
+        ]
+       ]
+      },
+      {
+       "h": "Scrum",
+       "b": [
+        [
+         "p",
+         "Le travail est découpé en sprints de 2 à 4 semaines : planification, travail, suivi quotidien, démonstration, amélioration."
+        ],
+        [
+         "table",
+         [
+          [
+           "Priorité",
+           "Backlog produit"
+          ],
+          [
+           "1",
+           "Connexion"
+          ],
+          [
+           "2",
+           "Afficher le planning"
+          ],
+          [
+           "3",
+           "Ajouter aux favoris"
+          ],
+          [
+           "4",
+           "Notifications"
+          ]
+         ]
+        ],
+        [
+         "p",
+         "User Story : « En tant qu’étudiant, je veux enregistrer un cours en favori afin de le retrouver rapidement. » — qui, quoi, pourquoi."
+        ],
+        [
+         "ul",
+         [
+          "Daily Scrum — ~15 minutes : avancement, blocages, coordination",
+          "Sprint Review — le résultat répond-il au besoin ?",
+          "Rétrospective — que faut-il améliorer dans notre organisation ?"
+         ]
+        ]
+       ]
+      },
+      {
+       "h": "Les rôles Scrum",
+       "b": [
+        [
+         "ul",
+         [
+          "Product Owner — porte la vision produit, organise le backlog, représente les besoins clients",
+          "Scrum Master — facilite, aide à appliquer Scrum et à lever les blocages",
+          "Équipe de développement — développeurs, designers, testeurs ; organise la réalisation"
+         ]
+        ]
+       ]
+      },
+      {
+       "h": "Kanban et le WIP",
+       "b": [
+        [
+         "p",
+         "Associé à Taiichi Ohno et Toyota (années 1950), Kanban signifie « étiquette » ou « panneau visuel » : on visualise le flux de travail."
+        ],
+        [
+         "table",
+         [
+          [
+           "À faire",
+           "En cours",
+           "Terminé"
+          ],
+          [
+           "Notifications",
+           "Planning",
+           "Connexion"
+          ],
+          [
+           "Favoris",
+           "",
+           ""
+          ]
+         ]
+        ],
+        [
+         "p",
+         "WIP = Work In Progress. Limiter le WIP (ex. 2 tâches max en cours) réduit le multitâche et fait réellement terminer les tâches. 8 tâches en cours pour 1 terminée = blocage visible immédiatement."
+        ],
+        [
+         "note",
+         "Commencer beaucoup donne une impression de vitesse. Terminer produit la valeur."
+        ]
+       ]
+      },
+      {
+       "h": "Scrum ou Kanban ?",
+       "b": [
+        [
+         "p",
+         "Scrum : quand l’équipe aime travailler par périodes, avec des objectifs de sprint, des rôles et des rituels — par exemple une nouvelle application."
+        ],
+        [
+         "p",
+         "Kanban : quand le travail arrive en continu et que les priorités changent souvent — par exemple un support technique avec des tickets toute la journée."
+        ]
+       ]
+      },
+      {
+       "h": "Extreme Programming (XP)",
+       "b": [
+        [
+         "p",
+         "Années 1990, Kent Beck. Objectif : qualité du logiciel, moins d’erreurs, collaboration et feedback fréquent."
+        ],
+        [
+         "ul",
+         [
+          "Tests unitaires automatisés",
+          "Pair programming — l’un écrit, l’autre relit, puis on échange",
+          "Refactoring — améliorer le code sans changer ce qu’il fait",
+          "Intégration continue — petites intégrations fréquentes",
+          "Livraisons fréquentes — V1 connexion, V2 planning, V3 favoris…"
+         ]
+        ],
+        [
+         "code",
+         "// Avant : duplication\nfunction prixEtudiant(prix) { return prix - prix * 0.1; }\nfunction prixSenior(prix)   { return prix - prix * 0.1; }\n\n// Après refactoring\nfunction appliquerReduction(prix, taux) {\n  return prix - prix * taux;\n}"
+        ]
+       ]
+      },
+      {
+       "h": "Comparaison finale",
+       "b": [
+        [
+         "table",
+         [
+          [
+           "Approche",
+           "Organisation",
+           "Force",
+           "Attention"
+          ],
+          [
+           "Cascade",
+           "Étapes successives",
+           "Prévisibilité",
+           "Rigidité"
+          ],
+          [
+           "Scrum",
+           "Sprints",
+           "Cadre structuré",
+           "Rituels mal appliqués"
+          ],
+          [
+           "Kanban",
+           "Flux continu",
+           "Visibilité",
+           "Discipline"
+          ],
+          [
+           "XP",
+           "Pratiques techniques",
+           "Qualité du code",
+           "Rigueur"
+          ]
+         ]
+        ]
+       ]
+      },
+      {
+       "h": "À retenir",
+       "b": [
+        [
+         "ul",
+         [
+          "Cascade = séquentiel et planifié.",
+          "Agile = adaptation, feedback, livraison progressive.",
+          "Scrum = sprints, backlog, rôles, rituels.",
+          "Kanban = visualisation, WIP, flux.",
+          "XP = qualité technique : tests, binôme, refactoring, intégration continue."
+         ]
+        ]
+       ]
+      }
+     ],
+     "date": "2026-09-08",
+     "related": [
+      "js1"
+     ]
+    }
+   ],
+   "sem": "S3"
+  }
+ ]
+}
