@@ -411,7 +411,7 @@ mark{background:color-mix(in srgb, var(--yellow) 75%, transparent);color:inherit
 </head>
 <body>
 <div class="wrap">
-  <div class="bar mono topbar"><span>Nadir Leduc — BUT MMI ✦ carnet de révision</span><span class="row-gap"><span id="counts">Chargement des cours…</span><button id="themeBtn" class="btn sm" type="button">Thème : auto</button></span></div>
+  <div class="bar mono topbar"><span>Nadir Leduc — BUT MMI ✦ carnet de révision</span><span class="row-gap"><span id="counts">Chargement des cours…</span><button id="ghBtn" class="btn sm" type="button">Connexion GitHub</button><button id="themeBtn" class="btn sm" type="button">Thème : auto</button></span></div>
   <div class="hero">
     <h1 class="big">L’atlas<br><em>des cours</em><svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="#1B1A2E" stroke-width="1.5" d="M12 1.5l2.6 7 7.4.4-5.8 4.6 2 7.2L12 16.6l-6.2 4.1 2-7.2L2 8.9l7.4-.4z"/></svg></h1>
     <div class="side">
@@ -628,7 +628,7 @@ function renderEvents() {
   up.forEach((e) => {
     const d = daysTo(e.date), s = DB.subjects.find((x) => x.id === e.subj);
     let armed = false;
-    const x = cap.db ? el('button', { class: 'x', type: 'button', 'aria-label': 'Supprimer l’échéance', text: '✕', onclick: async () => { if (!armed) { armed = true; x.textContent = 'OK ?'; return; } try { await cap.db.doc('events/' + e.id).delete(); } catch (er) { toast('Suppression impossible.'); } } }) : null;
+    const x = el('button', { class: 'x', type: 'button', 'aria-label': 'Supprimer l’échéance', text: '✕', onclick: async () => { if (!armed) { armed = true; x.textContent = 'OK ?'; return; } if (cap.db) { try { await cap.db.doc('events/' + e.id).delete(); } catch (er) { toast('Suppression impossible.'); } } else { events = events.filter((y) => y.id !== e.id); lsSet('atlas-events', events); renderMain(); } } });
     box.append(el('div', { class: 'ev' + (d <= 7 ? ' soon' : '') }, [
       el('span', { class: 'mono small muted', text: (e.kind || 'Échéance') + ' · ' + frDate(e.date) }),
       el('span', { class: 'j', text: d === 0 ? 'Aujourd’hui' : 'J-' + d }),
@@ -636,7 +636,6 @@ function renderEvents() {
       s ? el('span', { class: 'mono small muted', text: s.code || s.name }) : null, x
     ]));
   });
-  if (!cap.db) { box.append(el('p', { class: 'muted', style: 'margin:0', text: 'Les échéances ne sont pas disponibles dans cette vue.' })); return; }
   if (!up.length) box.append(el('p', { class: 'muted', style: 'margin:0;align-self:center', text: 'Aucune échéance à venir. Ajoute ton prochain contrôle ou rendu.' }));
   const d = el('input', { id: 'evd', type: 'date', required: true, 'aria-label': 'Date' });
   const k = el('select', { id: 'evk', 'aria-label': 'Type' }, ['Contrôle', 'Rendu', 'Oral', 'Projet'].map((t) => el('option', { text: t })));
@@ -644,7 +643,9 @@ function renderEvents() {
   const t = el('input', { id: 'evt', type: 'text', placeholder: 'Intitulé', required: true, 'aria-label': 'Intitulé' });
   const f = el('form', { class: 'evform', onsubmit: async (ev) => {
     ev.preventDefault(); if (!d.value || !t.value.trim()) { toast('Indique une date et un intitulé.'); return; }
-    try { await cap.db.collection('events').add({ date: d.value, kind: k.value, subj: sjs.value, title: t.value.trim(), by: uid || '' }); toast('Échéance ajoutée'); } catch (er) { toast(er && er.code === 'quota_exceeded' ? 'Plus de place pour de nouvelles échéances.' : 'Ajout impossible.'); }
+    const evd = { date: d.value, kind: k.value, subj: sjs.value, title: t.value.trim(), by: uid || '' };
+    if (!cap.db) { events.push(Object.assign({ id: Date.now().toString(36) }, evd)); lsSet('atlas-events', events); renderMain(); toast('Échéance ajoutée'); return; }
+    try { await cap.db.collection('events').add(evd); toast('Échéance ajoutée'); } catch (er) { toast(er && er.code === 'quota_exceeded' ? 'Plus de place pour de nouvelles échéances.' : 'Ajout impossible.'); }
   } }, [d, k, sjs, t, el('button', { class: 'btn sm solid', type: 'submit', text: '+ Échéance' })]);
   box.append(el('div', { class: 'ev', style: 'flex-basis:300px;border-style:dashed' }, [el('span', { class: 'mono small muted', text: 'Nouvelle échéance' }), f]));
 }
@@ -865,7 +866,7 @@ $('#semPdf').addEventListener('click', () => { const list = flat().filter((x) =>
 function go(next) {
   stopAll();
   state = Object.assign({ view: 'map', subj: null, course: null, tab: 'cours', section: null }, next);
-  const h = state.view === 'course' ? '#c-' + state.course : state.view === 'subj' ? '#m-' + state.subj : state.view === 'add' ? '#ajouter' : state.view === 'exam' ? '#examen' : state.view === 'import' ? '#importer' : state.view === 'due' ? '#cartes' : '';
+  const h = state.view === 'course' ? '#c-' + state.course : state.view === 'subj' ? '#m-' + state.subj : state.view === 'add' ? '#ajouter' : state.view === 'exam' ? '#examen' : state.view === 'import' ? '#importer' : state.view === 'due' ? '#cartes' : state.view === 'gh' ? '#github' : '';
   if (location.hash !== h) { try { history.replaceState(null, '', h || location.pathname + location.search); } catch (e) {} }
   liveQuiz = null;
   renderOverlay();
@@ -875,10 +876,11 @@ function fromHash() {
   const h = location.hash.slice(1);
   if (h.startsWith('c-')) { const f = findCourse(h.slice(2)); if (f) return go({ view: 'course', subj: f.s.id, course: f.c.id }); }
   if (h.startsWith('m-') && DB.subjects.some((s) => s.id === h.slice(2))) return go({ view: 'subj', subj: h.slice(2) });
-  if (h === 'ajouter' && canWrite) return go({ view: 'add' });
+  if (h === 'ajouter' && writable()) return go({ view: 'add' });
   if (h === 'importer' && canWrite) return go({ view: 'import' });
   if (h === 'examen') return go({ view: 'exam' });
   if (h === 'cartes') return go({ view: 'due' });
+  if (h === 'github') return go({ view: 'gh' });
   go({ view: 'map' });
 }
 window.addEventListener('hashchange', fromHash);
@@ -898,6 +900,7 @@ function renderOverlay() {
   else if (v === 'import') o.append(importView());
   else if (v === 'due') o.append(dueView());
   else if (v === 'hist') o.append(histView());
+  else if (v === 'gh') o.append(ghView());
 }
 function drawer(label, title, kids, wide) {
   const d = el('div', { class: 'drawer', role: 'dialog', 'aria-modal': 'true', 'aria-label': label, style: wide ? 'max-width:720px' : null }, [
@@ -948,8 +951,8 @@ function block(b) {
     const cols = Math.max.apply(null, v.map((r) => r.length));
     return el('div', { class: 'tbl indent' }, v.map((r, ri) => el('div', { class: 'tr' + (ri === 0 ? ' th' : ''), style: 'grid-template-columns:repeat(' + cols + ',minmax(0,1fr))' }, r.map((t) => el('span', { text: t })))));
   }
-  if (k === 'img') return el('figure', { class: 'indent' }, [el('img', { src: '/_blob/' + v.id, alt: v.cap || 'Illustration du cours', loading: 'lazy' }), v.cap ? el('figcaption', { text: v.cap }) : null]);
-  if (k === 'file') return el('a', { class: 'fileblk indent', href: '/_blob/' + v.id, target: '_blank', rel: 'noopener' }, [el('span', { class: 'mono', text: 'PDF' }), el('span', { text: v.name || 'Document' }), el('span', { 'aria-hidden': 'true', text: '↗' })]);
+  if (k === 'img') return el('figure', { class: 'indent' }, [el('img', { src: v.src || '/_blob/' + v.id, alt: v.cap || 'Illustration du cours', loading: 'lazy' }), v.cap ? el('figcaption', { text: v.cap }) : null]);
+  if (k === 'file') return el('a', { class: 'fileblk indent', href: v.src || '/_blob/' + v.id, target: '_blank', rel: 'noopener' }, [el('span', { class: 'mono', text: 'PDF' }), el('span', { text: v.name || 'Document' }), el('span', { 'aria-hidden': 'true', text: '↗' })]);
   return el('p', { class: 't indent', text: String(v) });
 }
 
@@ -1058,7 +1061,7 @@ function renderFiche(content, f) {
       fi.points && fi.points.length ? el('section', { class: 'part' }, [el('h2', null, [el('span', { text: '01' }), el('span', { text: 'Points clés' })]), block(['ul', fi.points])]) : null,
       fi.definitions && fi.definitions.length ? el('section', { class: 'part' }, [el('h2', null, [el('span', { text: '02' }), el('span', { text: 'Définitions' })]), block(['table', [['Terme', 'Définition']].concat(fi.definitions.map((d) => [d.terme, d.def]))])]) : null,
       fi.pieges && fi.pieges.length ? el('section', { class: 'part' }, [el('h2', null, [el('span', { text: '03' }), el('span', { text: 'Pièges à éviter' })]), block(['ul', fi.pieges])]) : null,
-      el('div', { class: 'endbar' }, [el('button', { class: 'btn', type: 'button', onclick: () => exportPdf(c, s, fi), text: 'Exporter la fiche en PDF' }), el('button', { class: 'btn', type: 'button', onclick: () => make(true), text: 'Régénérer' })])
+      el('div', { class: 'endbar' }, [el('button', { class: 'btn', type: 'button', onclick: () => exportPdf(c, s, fi), text: 'Exporter la fiche en PDF' }), cap.sample ? el('button', { class: 'btn', type: 'button', onclick: () => make(true), text: 'Régénérer' }) : null])
     );
   };
   const make = (fresh) => {
@@ -1129,7 +1132,9 @@ function renderQuiz(content, f) {
   content.append(el('div', { class: 'toc' }, [el('span', { class: 'mono', text: 'Quiz' }), el('p', { class: 'help', text: '8 questions générées à partir du cours. 60 % passe le cours en « Révisé », 90 % en « Maîtrisé ».' })]), body);
   const out = el('div', { class: 'panel' }); body.append(out);
   const start = (fresh, onlyWrong) => {
-    if (!onlyWrong && !needSample(out)) return; out.replaceChildren();
+    const hasQ = gen[c.id] && gen[c.id].quiz && gen[c.id].quiz.length;
+    if (!cap.sample) fresh = false;
+    if (!onlyWrong && !hasQ && !needSample(out)) return; out.replaceChildren();
     const cached = onlyWrong ? (me.wrong[c.id] || []).slice() : (!fresh && gen[c.id] && gen[c.id].quiz);
     const p = cached ? Promise.resolve(cached) : aiRun(out, 'Claude prépare les questions… (10 à 60 s)', (signal) => getQuiz(c, signal, fresh));
     p.then((qs) => {
@@ -1141,7 +1146,7 @@ function renderQuiz(content, f) {
         me.best[c.id] = Math.max(me.best[c.id] || 0, pct); saveMe(); pushScore();
         if (pct >= 90) setStatus(c.id, 'maitrise', true); else if (pct >= 60) setStatus(c.id, 'revise', true); else setStatus(c.id, 'vu', true);
         sc.replaceChildren(el('div', { class: 'box' }, [el('div', { class: 'score', text: pct + ' %' }), el('p', { text: g + ' bonnes réponses sur ' + n + '.' + (pct >= 90 ? ' Cours maîtrisé.' : pct >= 60 ? ' Cours révisé.' : ' Relis le cours puis retente.') }),
-          el('div', { class: 'row-gap' }, [el('button', { class: 'btn solid', type: 'button', onclick: () => start(true), text: 'Nouvelles questions' }), el('button', { class: 'btn', type: 'button', onclick: () => start(false), text: 'Refaire ce quiz' })])]));
+          el('div', { class: 'row-gap' }, [cap.sample ? el('button', { class: 'btn solid', type: 'button', onclick: () => start(true), text: 'Nouvelles questions' }) : null, el('button', { class: cap.sample ? 'btn' : 'btn solid', type: 'button', onclick: () => start(false), text: 'Refaire ce quiz' })])]));
         sc.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, null, c.id);
     }).catch(() => out.append(el('button', { class: 'btn', type: 'button', onclick: () => start(true), text: 'Réessayer' })));
@@ -1187,7 +1192,7 @@ function renderCards(content, f) {
   const make = (fresh) => { if (!needSample(out)) return; out.replaceChildren(); aiRun(out, 'Claude prépare les cartes… (10 à 60 s)', (signal) => getCards(c, signal, fresh)).then(() => begin(true)).catch(() => out.append(el('button', { class: 'btn', type: 'button', onclick: () => make(true), text: 'Réessayer' }))); };
   if (deckOf(c.id).length) {
     const due = dueCards(c.id).length;
-    out.append(el('div', { class: 'box' }, [el('p', { style: 'margin:0 0 14px', text: due + ' carte' + (due > 1 ? 's' : '') + ' à revoir aujourd’hui.' }), el('div', { class: 'row-gap' }, [el('button', { class: 'btn solid', type: 'button', onclick: () => begin(false), text: 'Réviser' }), el('button', { class: 'btn', type: 'button', onclick: () => begin(true), text: 'Tout le paquet' }), el('button', { class: 'btn', type: 'button', onclick: () => make(true), text: 'Régénérer les cartes' }), el('button', { class: 'btn', type: 'button', onclick: () => exportAnki(c), text: 'Exporter pour Anki' })])]));
+    out.append(el('div', { class: 'box' }, [el('p', { style: 'margin:0 0 14px', text: due + ' carte' + (due > 1 ? 's' : '') + ' à revoir aujourd’hui.' }), el('div', { class: 'row-gap' }, [el('button', { class: 'btn solid', type: 'button', onclick: () => begin(false), text: 'Réviser' }), el('button', { class: 'btn', type: 'button', onclick: () => begin(true), text: 'Tout le paquet' }), cap.sample ? el('button', { class: 'btn', type: 'button', onclick: () => make(true), text: 'Régénérer les cartes' }) : null, el('button', { class: 'btn', type: 'button', onclick: () => exportAnki(c), text: 'Exporter pour Anki' })])]));
   } else out.append(el('div', { class: 'box' }, [el('p', { style: 'margin:0 0 14px', text: 'Claude va créer un paquet de cartes à partir du cours.' }), el('button', { class: 'btn solid', type: 'button', onclick: () => make(false), text: 'Créer les flashcards' })]));
 }
 function dueView() {
@@ -1230,7 +1235,7 @@ function renderAsk(content, f) {
   const body = el('div', { class: 'body' }, head(c, [el('span', { text: 'Demander à Claude' })]));
   let ch = null;
   content.append(el('div', { class: 'toc' }, [el('span', { class: 'mono', text: 'Questions' }), el('p', { class: 'help', text: 'Pose une question sur ce cours : Claude répond à partir de son contenu.' })].concat(['Explique-moi la notion principale plus simplement', 'Donne-moi un exemple concret', 'Fais-moi un résumé en 5 lignes'].map((p) => el('button', { class: 'btn sm', type: 'button', style: 'justify-content:flex-start;text-align:left;margin-top:6px', onclick: () => { if (ch) ch.send(p); }, text: p })))), body);
-  if (!needSample(body)) return;
+  if (!cap.sample) { askOffline(body, c); return; }
   const RULES = 'Tu es un tuteur pour un étudiant de BUT MMI. Réponds en français, clairement et brièvement, à partir de ce cours. Si la réponse dépasse le cours, dis-le.\n\nCOURS :\n' + plainCourse(c, 30000);
   ch = makeChat(body, 'ask-' + c.id, RULES, { placeholder: 'Pourquoi this est perdu dans un callback ?' });
   if (askPrefill) { const q = askPrefill; askPrefill = ''; ch.send(q); }
@@ -1307,8 +1312,8 @@ function parseContent(src, opts) {
     if (!t || t === '---') { flush(); continue; }
     let m;
     if ((m = t.match(/^(#{1,4})\s+(.*)$/))) { flush(); if (m[1].length === minH) { cur = { h: m[2].trim(), b: [] }; sections.push(cur); } else sec().b.push(['h3', m[2].trim()]); continue; }
-    if ((m = t.match(/^!\[([^\]]*)\]\(asset:([a-f0-9]{32})\)$/))) { flush(); sec().b.push(['img', { id: m[2], cap: m[1] }]); continue; }
-    if ((m = t.match(/^\[\[fichier:([a-f0-9]{32})\|(.*)\]\]$/))) { flush(); sec().b.push(['file', { id: m[1], name: m[2] }]); continue; }
+    if ((m = t.match(/^!\[([^\]]*)\]\(([^)\s]+)\)$/))) { flush(); const ref = m[2]; sec().b.push(['img', /^asset:[a-f0-9]{32}$/.test(ref) ? { id: ref.slice(6), cap: m[1] } : { src: ref, cap: m[1] }]); continue; }
+    if ((m = t.match(/^\[\[fichier:([^|\]]+)\|(.*)\]\]$/))) { flush(); sec().b.push(['file', /^[a-f0-9]{32}$/.test(m[1]) ? { id: m[1], name: m[2] } : { src: m[1], name: m[2] }]); continue; }
     if ((m = t.match(/^!!\s*(.*)$/))) { flush(); sec().b.push(['note', m[1]]); continue; }
     if ((m = t.match(/^[-*•]\s+(.*)$/))) { if (para.length || table || (list && ltype !== 'ul')) flush(); ltype = 'ul'; (list = list || []).push(m[1]); continue; }
     if ((m = t.match(/^\d+[.)]\s+(.*)$/))) { if (para.length || table || (list && ltype !== 'ol')) flush(); ltype = 'ol'; (list = list || []).push(m[1]); continue; }
@@ -1331,7 +1336,7 @@ function toMd(sections) {
     if (k === 'p') return v; if (k === 'h3') return '### ' + v; if (k === 'note') return '!! ' + v; if (k === 'quote') return '> ' + v;
     if (k === 'ul') return v.map((x) => '- ' + x).join('\n'); if (k === 'ol') return v.map((x, i) => (i + 1) + '. ' + x).join('\n');
     if (k === 'code') return '```\n' + v + '\n```'; if (k === 'table') return v.map((r) => '| ' + r.join(' | ') + ' |').join('\n');
-    if (k === 'img') return '![' + (v.cap || '') + '](asset:' + v.id + ')'; if (k === 'file') return '[[fichier:' + v.id + '|' + (v.name || 'document.pdf') + ']]';
+    if (k === 'img') return '![' + (v.cap || '') + '](' + (v.src || 'asset:' + v.id) + ')'; if (k === 'file') return '[[fichier:' + (v.src || v.id) + '|' + (v.name || 'document.pdf') + ']]';
     return String(v);
   }).join('\n\n')).join('\n\n');
 }
@@ -1414,15 +1419,23 @@ function formView() {
   const upd = () => { const p = parseContent(body.value); count.textContent = body.value.trim() ? p.length + (p.length > 1 ? ' parties détectées' : ' partie détectée') : ''; };
   body.addEventListener('input', upd); upd();
   const fileIn = el('input', { id: 'f-file', type: 'file', accept: 'image/png,image/jpeg,image/webp,image/gif,application/pdf', hidden: true });
-  const upBtn = cap.assets ? el('button', { class: 'btn sm', type: 'button', onclick: () => fileIn.click(), text: '+ Image ou PDF' }) : null;
+  const upBtn = (cap.assets || ghOn()) ? el('button', { class: 'btn sm', type: 'button', onclick: () => fileIn.click(), text: '+ Image ou PDF' }) : null;
   fileIn.addEventListener('change', async () => {
     const fl = fileIn.files && fileIn.files[0]; if (!fl) return;
     upBtn.disabled = true; upBtn.textContent = 'Envoi…';
     try {
-      const r = await cap.assets.upload(fl, fl.type ? undefined : { type: 'application/pdf' });
-      const line = fl.type === 'application/pdf' ? '[[fichier:' + r.id + '|' + fl.name + ']]' : '![' + fl.name.replace(/\.[^.]+$/, '') + '](asset:' + r.id + ')';
+      let ref;
+      if (cap.assets) { const r = await cap.assets.upload(fl, fl.type ? undefined : { type: 'application/pdf' }); ref = 'asset:' + r.id; }
+      else {
+        if (fl.size > 20 * 1024 * 1024) throw new Error('big');
+        const b64 = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(',')[1]); fr.onerror = rej; fr.readAsDataURL(fl); });
+        const ext = (fl.name.match(/\.[a-z0-9]+$/i) || [''])[0].toLowerCase();
+        ref = 'media/' + Date.now().toString(36) + '-' + slug(fl.name.replace(/\.[^.]+$/, '')) + ext;
+        await ghPut(ref, b64, 'Atlas : ajout de ' + fl.name);
+      }
+      const line = fl.type === 'application/pdf' ? '[[fichier:' + ref.replace(/^asset:/, '') + '|' + fl.name + ']]' : '![' + fl.name.replace(/\.[^.]+$/, '') + '](' + ref + ')';
       const pos = body.selectionStart || body.value.length; body.value = body.value.slice(0, pos) + '\n' + line + '\n' + body.value.slice(pos); upd(); toast('Fichier ajouté au cours');
-    } catch (e) { toast(e && e.code === 'quota_exceeded' ? 'Plus d’espace pour les fichiers.' : 'Envoi du fichier impossible.'); }
+    } catch (e) { toast(e && e.code === 'quota_exceeded' ? 'Plus d’espace pour les fichiers.' : e && e.status ? ghErr(e) : e && e.message === 'big' ? 'Fichier trop lourd (20 Mo maximum).' : 'Envoi du fichier impossible.'); }
     upBtn.disabled = false; upBtn.textContent = '+ Image ou PDF'; fileIn.value = '';
   });
   const submit = el('button', { class: 'btn solid', type: 'submit', text: editing ? 'Enregistrer les modifications' : 'Enregistrer le cours' });
@@ -1558,10 +1571,92 @@ function importView() {
   return d;
 }
 
+/* =================== GitHub sync =================== */
+let GH = lsGet('atlas-gh', null);
+let artWritable = false;
+const ghOn = () => !!(GH && GH.token && GH.owner && GH.repo);
+const writable = () => artWritable || ghOn();
+const b64utf8 = (str) => { const bytes = new TextEncoder().encode(str); let bin = ''; for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(bin); };
+const fromb64utf8 = (b) => new TextDecoder().decode(Uint8Array.from(atob(String(b).replace(/\s/g, '')), (ch) => ch.charCodeAt(0)));
+async function gh(path, opts) {
+  const r = await fetch('https://api.github.com/repos/' + GH.owner + '/' + GH.repo + path, Object.assign({}, opts, { cache: 'no-store', headers: { Accept: 'application/vnd.github+json', Authorization: 'Bearer ' + GH.token, 'X-GitHub-Api-Version': '2022-11-28' } }));
+  if (!r.ok) { const e = new Error('GitHub ' + r.status); e.status = r.status; throw e; }
+  return r.status === 204 ? null : r.json();
+}
+async function ghPut(path, b64, message) {
+  const br = GH.branch || 'main';
+  let sha;
+  try { const cur = await gh('/contents/' + path + '?ref=' + encodeURIComponent(br)); sha = cur.sha; } catch (e) { if (e.status !== 404) throw e; }
+  const body = { message, content: b64, branch: br }; if (sha) body.sha = sha;
+  return gh('/contents/' + path, { method: 'PUT', body: JSON.stringify(body) });
+}
+async function ghLoad() {
+  const cur = await gh('/contents/data/courses.json?ref=' + encodeURIComponent(GH.branch || 'main'));
+  if (cur.content) return JSON.parse(fromb64utf8(cur.content));
+  const raw = await fetch(cur.download_url, { cache: 'no-store' }); return raw.json();
+}
+function ghErr(e) {
+  if (!e || !e.status) return 'GitHub ne répond pas. Vérifie ta connexion internet.';
+  if (e.status === 401) return 'Clé GitHub refusée : elle a expiré ou elle est incorrecte. Recolle-la dans « Connexion GitHub ».';
+  if (e.status === 403) return 'Ta clé GitHub n’a pas le droit d’écrire dans ce dépôt : il faut la permission « Contents : Read and write ».';
+  if (e.status === 404) return 'Dépôt introuvable : vérifie le propriétaire et le nom du dépôt, et que la clé a accès à ce dépôt.';
+  if (e.status === 409 || e.status === 422) return 'Le fichier a changé sur GitHub entre-temps. Recharge la page puis recommence.';
+  return 'Erreur GitHub (' + e.status + '). Réessaie dans un instant.';
+}
+function updateGhBtn() { const b = $('#ghBtn'); if (b) b.textContent = ghOn() ? 'GitHub ✓ ' + GH.repo : 'Connexion GitHub'; }
+let ghAfter = null;
+function ghView() {
+  const cur = GH || { owner: 'Nadirous', repo: 'smartuniv', branch: 'main', token: '' };
+  const inp = (id, v, type, ph) => el('input', { id, type: type || 'text', value: v || null, placeholder: ph || null, autocomplete: 'off', spellcheck: 'false' });
+  const owner = inp('gh-owner', cur.owner), repo = inp('gh-repo', cur.repo), branch = inp('gh-branch', cur.branch || 'main'), token = inp('gh-token', cur.token, 'password', 'github_pat_…');
+  const st = el('p', { class: 'status', 'aria-live': 'polite' });
+  const save = el('button', { class: 'btn solid', type: 'submit', text: 'Enregistrer et tester' });
+  const form = el('form', { class: 'form', onsubmit: async (e) => {
+    e.preventDefault();
+    const next = { owner: owner.value.trim(), repo: repo.value.trim(), branch: branch.value.trim() || 'main', token: token.value.trim() };
+    if (!next.owner || !next.repo || !next.token) { st.className = 'status err'; st.textContent = 'Remplis le propriétaire, le dépôt et la clé.'; return; }
+    save.disabled = true; st.className = 'status thinking'; st.textContent = 'Test de la connexion…';
+    const old = GH; GH = next;
+    try {
+      const info = await gh('');
+      if (info.permissions && info.permissions.push === false) throw Object.assign(new Error('ro'), { status: 403 });
+      lsSet('atlas-gh', GH); updateGhBtn(); canWrite = true; updateWriteUi();
+      st.className = 'status okc'; st.textContent = 'Connecté à ' + GH.owner + '/' + GH.repo + '. Les cours que tu ajoutes partent directement sur GitHub.';
+      toast('GitHub connecté');
+      if (ghAfter) { const a = ghAfter; ghAfter = null; setTimeout(() => go(a), 600); }
+    } catch (er) { GH = old; st.className = 'status err'; st.textContent = ghErr(er); }
+    save.disabled = false;
+  } }, [
+    el('div', { class: 'two' }, [field('gh-owner', 'Propriétaire', owner), field('gh-repo', 'Dépôt', repo), field('gh-branch', 'Branche', branch)]),
+    field('gh-token', 'Clé d’accès GitHub (fine-grained token)', token, [el('span', { class: 'help', text: 'Elle reste dans ce navigateur uniquement.' })]),
+    el('div', { class: 'row-gap' }, [save, ghOn() ? el('button', { class: 'btn danger', type: 'button', onclick: () => { GH = null; try { localStorage.removeItem('atlas-gh'); } catch (er) {} updateGhBtn(); canWrite = artWritable; updateWriteUi(); go({ view: 'map' }); toast('GitHub déconnecté'); }, text: 'Se déconnecter' }) : null]),
+    st
+  ]);
+  return drawer('GitHub', 'Connexion GitHub', [
+    el('p', { style: 'margin:0', text: 'Quand le site tourne hors de claude.ai (GitHub Pages), il enregistre les cours ajoutés ou modifiés directement dans ton dépôt.' }),
+    el('div', { class: 'box panel', style: 'gap:8px' }, [el('span', { class: 'lbl', text: 'Créer la clé (une seule fois)' }),
+      el('ol', { style: 'margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px' }, [
+        el('li', null, ['Ouvre ', el('a', { href: 'https://github.com/settings/personal-access-tokens/new', target: '_blank', rel: 'noopener', text: 'github.com/settings/personal-access-tokens/new' })]),
+        el('li', { text: 'Repository access : « Only select repositories » → smartuniv.' }),
+        el('li', { text: 'Permissions → Repository → Contents : « Read and write ».' }),
+        el('li', { text: 'Génère la clé, copie-la et colle-la ci-dessous.' })])]),
+    form], true);
+}
+$('#ghBtn').addEventListener('click', () => go({ view: 'gh' }));
+
 /* =================== save courses =================== */
 let lastError = '';
 async function saveCourses(okMsg) {
-  if (!cap.art) { lastError = 'L’enregistrement n’est pas disponible dans cette vue.'; toast(lastError); return false; }
+  if (!artWritable) {
+    if (!ghOn()) { lastError = 'Connecte d’abord ton GitHub (bouton « Connexion GitHub » en haut) pour enregistrer.'; toast(lastError); return false; }
+    saving = true;
+    try {
+      DB.updated = today();
+      await ghPut('data/courses.json', b64utf8(JSON.stringify(DB, null, 1)), 'Atlas : ' + okMsg);
+      toast(okMsg + ' · envoyé sur GitHub'); return true;
+    } catch (e) { lastError = ghErr(e); toast(lastError); return false; }
+    finally { saving = false; }
+  }
   saving = true;
   try {
     DB.updated = today();
@@ -1569,7 +1664,7 @@ async function saveCourses(okMsg) {
     toast(okMsg); return true;
   } catch (e) {
     const code = e && e.code;
-    if (['not_writer', 'not_granted', 'consent_required', 'capability_disabled', 'not_declared'].includes(code)) { canWrite = false; updateWriteUi(); lastError = 'Cette vue est en lecture seule : tu ne peux pas enregistrer ici.'; }
+    if (['not_writer', 'not_granted', 'consent_required', 'capability_disabled', 'not_declared'].includes(code)) { artWritable = false; canWrite = ghOn(); updateWriteUi(); lastError = 'Cette vue est en lecture seule : tu ne peux pas enregistrer ici.'; }
     else if (code === 'conflict') lastError = 'Une version plus récente vient d’être enregistrée. La page se recharge, recommence ensuite.';
     else if (code === 'rate_limited') lastError = 'Trop d’enregistrements d’affilée. Attends une minute puis réessaie.';
     else if (code === 'too_large') lastError = 'Les cours sont trop volumineux pour être enregistrés d’un coup.';
@@ -1577,7 +1672,7 @@ async function saveCourses(okMsg) {
     toast(lastError); return false;
   } finally { saving = false; }
 }
-function updateWriteUi() { $('#addBtn').hidden = !canWrite; $('#importBtn').hidden = !canWrite; }
+function updateWriteUi() { $('#addBtn').hidden = false; $('#importBtn').hidden = !canWrite; }
 
 /* =================== PDF export =================== */
 async function exportPdf(a, b, fiche0) {
@@ -1871,7 +1966,30 @@ function renderSujet(content, f) {
   const body = el('div', { class: 'body' }, head(c, [el('span', { text: 'Sujet type contrôle' }), best != null ? el('span', { text: 'Meilleure note : ' + best + '/20' }) : null]));
   content.append(el('div', { class: 'toc' }, [el('span', { class: 'mono', text: 'Sujet' }), el('p', { class: 'help', text: 'Un vrai sujet rédigé sur 20 points. Tu réponds, Claude corrige comme un prof et te note.' })]), body);
   const out = el('div', { class: 'panel' }); body.append(out);
-  if (!needSample(out)) return;
+  const offline = !cap.sample;
+  if (offline && !(gen[c.id] && gen[c.id].sujet)) { needSample(out); return; }
+  const selfCorrect = (sj, tas, res) => {
+    res.replaceChildren();
+    const pts = sj.questions.map((q, i) => {
+      const max = +q.points || 4;
+      const n = el('input', { type: 'number', min: '0', max: String(max), step: '0.5', value: '0', id: 'sc-' + i, style: 'width:90px;min-height:40px;padding:0 10px;border:2px solid var(--ink);border-radius:10px;background:var(--card)', 'aria-label': 'Points pour la question ' + (i + 1) });
+      res.append(el('div', { class: 'q' }, [el('span', { class: 'qn', text: 'Question ' + (i + 1) + ' · sur ' + max }), el('div', { class: 'qt', text: q.q }),
+        el('p', { style: 'margin:0;white-space:pre-wrap;color:var(--mute)', text: 'Ta réponse : ' + (tas[i].value.trim() || '(pas de réponse)') }),
+        el('p', { class: 'explain', style: 'margin:0', text: 'Réponse attendue : ' + (q.attendu || '—') }),
+        el('label', { class: 'row-gap', for: 'sc-' + i }, [el('span', { class: 'lbl', text: 'Tes points' }), n, el('span', { class: 'mono small muted', text: '/ ' + max })])]));
+      return n;
+    });
+    const out2 = el('div');
+    res.append(el('div', { class: 'row-gap' }, [el('button', { class: 'btn solid', type: 'button', onclick: () => {
+      const note = Math.min(20, pts.reduce((a, n, i) => a + Math.max(0, Math.min(+n.max, +n.value || 0)), 0));
+      const total = sj.questions.reduce((a, q) => a + (+q.points || 4), 0) || 20;
+      const n20 = Math.round(note / total * 20 * 2) / 2;
+      me.note20[c.id] = Math.max(me.note20[c.id] || 0, n20); saveMe(); markActivity();
+      if (n20 >= 16) setStatus(c.id, 'maitrise', true); else if (n20 >= 12) setStatus(c.id, 'revise', true);
+      out2.replaceChildren(el('div', { class: 'box' }, [el('div', { class: 'score', text: n20 + '/20' }), el('p', { style: 'margin:0', text: n20 >= 16 ? 'Excellent, cours maîtrisé.' : n20 >= 12 ? 'Bien, cours révisé. Relis les réponses attendues pour gagner les derniers points.' : 'Relis le cours et les réponses attendues, puis retente.' })]));
+    }, text: 'Calculer ma note' })]), out2);
+    res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
   const showSujet = (sj) => {
     out.replaceChildren();
     out.append(el('div', { class: 'box' }, [el('span', { class: 'lbl', text: 'Consigne' }), el('p', { style: 'margin:8px 0 0', text: sj.consigne || 'Réponds aux questions en rédigeant.' })]));
@@ -1879,6 +1997,7 @@ function renderSujet(content, f) {
     const res = el('div', { class: 'panel' });
     const btn = el('button', { class: 'btn solid', type: 'button', onclick: () => {
       if (tas.every((t) => !t.value.trim())) { toast('Réponds au moins à une question.'); return; }
+      if (offline) { selfCorrect(sj, tas, res); return; }
       btn.disabled = true; res.replaceChildren();
       const copie = sj.questions.map((q, i) => 'Question ' + (i + 1) + ' (' + q.points + ' pts) : ' + q.q + '\nRéponse de l’étudiant : ' + (tas[i].value.trim() || '(pas de réponse)')).join('\n\n');
       aiRun(res, 'Claude corrige ta copie… (20 à 60 s)', (signal) => cap.sample.json('Tu es un professeur de BUT MMI qui corrige une copie, avec bienveillance mais exigence. Note chaque question selon son barème, en t’appuyant sur le cours. Réponds en français.\nRéponds UNIQUEMENT avec un objet JSON : {"note": 13.5, "corrections":[{"points":2.5,"commentaire":"ce qui est juste / ce qui manque","attendu":"la réponse attendue en bref"}], "bilan":"deux ou trois phrases de conseils"}\n\nCOURS :\n' + plainCourse(c, 25000) + '\n\nCOPIE :\n' + copie, { signal, cache: false }))
@@ -1888,9 +2007,9 @@ function renderSujet(content, f) {
           if (note >= 16) setStatus(c.id, 'maitrise', true); else if (note >= 12) setStatus(c.id, 'revise', true);
           res.append(el('div', { class: 'box' }, [el('div', { class: 'score', text: note + '/20' }), el('p', { text: r.bilan || '' })]));
           (r.corrections || []).forEach((k, i) => res.append(el('div', { class: 'q' }, [el('span', { class: 'qn', text: 'Question ' + (i + 1) + ' · ' + (k.points != null ? k.points : '?') + '/' + ((sj.questions[i] || {}).points || '?') }), el('p', { style: 'margin:0', text: k.commentaire || '' }), k.attendu ? el('p', { class: 'explain', style: 'margin:0', text: 'Attendu : ' + k.attendu }) : null])));
-          res.append(el('div', { class: 'row-gap' }, [el('button', { class: 'btn', type: 'button', onclick: () => make(true), text: 'Nouveau sujet' })]));
+          res.append(el('div', { class: 'row-gap' }, [el('button', { class: 'btn', type: 'button', onclick: () => make(true), text: 'Nouveau sujet' }), el('button', { class: 'btn', type: 'button', onclick: () => selfCorrect(sj, tas, res), text: 'Voir les réponses attendues' })]));
         }).catch(() => {}).finally(() => { btn.disabled = false; });
-    }, text: 'Rendre ma copie' });
+    }, text: offline ? 'Me corriger avec le corrigé' : 'Rendre ma copie' });
     out.append(el('div', null, [btn]), res);
   };
   const make = (fresh) => {
@@ -1900,7 +2019,7 @@ function renderSujet(content, f) {
       .catch(() => out.append(el('button', { class: 'btn', type: 'button', onclick: () => make(true), text: 'Réessayer' })));
   };
   const g = gen[c.id];
-  if (g && g.sujet) { showSujet(g.sujet); out.prepend(el('div', null, [el('button', { class: 'btn sm', type: 'button', onclick: () => make(true), text: 'Générer un autre sujet' })])); }
+  if (g && g.sujet) { showSujet(g.sujet); if (!offline) out.prepend(el('div', null, [el('button', { class: 'btn sm', type: 'button', onclick: () => make(true), text: 'Générer un autre sujet' })])); }
   else out.append(el('div', { class: 'box' }, [el('p', { style: 'margin:0 0 14px', text: 'Claude rédige un sujet de contrôle sur 20 à partir du cours.' }), el('button', { class: 'btn solid', type: 'button', onclick: () => make(false), text: 'Générer le sujet' })]));
 }
 
@@ -1922,7 +2041,8 @@ function renderCode(content, f) {
   const body = el('div', { class: 'body' }, head(c, [el('span', { text: 'Exercices de code' }), el('span', { text: lang === 'php' ? 'PHP' : 'JavaScript' })]));
   content.append(el('div', { class: 'toc' }, [el('span', { class: 'mono', text: 'Code' }), el('p', { class: 'help', text: lang === 'php' ? 'Le PHP ne s’exécute pas dans le navigateur : écris ton code, Claude le vérifie et explique.' : 'Écris ton code, exécute-le ici (console.log s’affiche dessous), puis fais-le vérifier par Claude.' })]), body);
   const out = el('div', { class: 'panel' }); body.append(out);
-  if (!needSample(out)) return;
+  if (!cap.sample && !(gen[c.id] && gen[c.id].exos)) { needSample(out); return; }
+  const norm = (t) => String(t || '').replace(/\r/g, '').split('\n').map((l) => l.trim()).filter(Boolean).join('\n');
   const showEx = (exos) => {
     out.replaceChildren();
     exos.forEach((x, i) => {
@@ -1933,16 +2053,27 @@ function renderCode(content, f) {
       const o = el('pre', { class: 'out', 'aria-live': 'polite', hidden: true });
       const fb = el('div', { class: 'panel' });
       const runB = lang === 'js' ? el('button', { class: 'btn sm solid', type: 'button', onclick: async () => { o.hidden = false; o.textContent = 'Exécution…'; o.textContent = await runJs(ed.value); markActivity(); }, text: '▶ Exécuter' }) : null;
-      const chk = el('button', { class: 'btn sm', type: 'button', onclick: () => {
+      const sol = x.solution ? el('pre', { class: 'code', hidden: true }, [el('code', { text: x.solution })]) : null;
+      const solBtn = x.solution ? el('button', { class: 'btn sm', type: 'button', onclick: () => { sol.hidden = !sol.hidden; solBtn.textContent = sol.hidden ? 'Voir la solution' : 'Masquer la solution'; }, text: 'Voir la solution' }) : null;
+      const chk = el('button', { class: 'btn sm', type: 'button', onclick: async () => {
+        if (!cap.sample) {
+          fb.replaceChildren();
+          if (lang !== 'js') { fb.append(el('p', { class: 'box', style: 'margin:0', text: 'Le PHP ne s’exécute pas dans le navigateur : compare ton code avec la solution et le résultat attendu (' + (x.attendu || '—') + ').' })); return; }
+          const got = await runJs(ed.value); o.hidden = false; o.textContent = got; markActivity();
+          const ok = x.attendu && norm(got) === norm(x.attendu);
+          fb.append(el('p', { class: 'box', style: 'margin:0;white-space:pre-wrap', text: ok ? '✓ Correct : ta sortie correspond au résultat attendu.' : '✗ Pas encore : attendu\n' + (x.attendu || '—') + '\n\nobtenu\n' + got }));
+          if (ok) { const st = me.progress[c.id] || ''; if (RANK[st] < 1) setStatus(c.id, 'vu', true); }
+          return;
+        }
         fb.replaceChildren(); chk.disabled = true;
         const ctl = new AbortController(); aborters.push(ctl);
         const p = el('p', { class: 'box', style: 'margin:0;white-space:pre-wrap', text: 'Claude relit ton code…' }); fb.append(p);
         cap.sample('Tu es un prof de développement en BUT MMI. Vérifie le code de l’étudiant pour cet exercice. Dis d’abord en une ligne si c’est correct, puis explique les erreurs et propose une correction courte. Réponds en français, sans tout réécrire si ce n’est pas nécessaire.\n\nEXERCICE : ' + x.enonce + '\nRÉSULTAT ATTENDU : ' + (x.attendu || '') + '\n\nCODE (' + (lang === 'php' ? 'PHP' : 'JavaScript') + ') :\n' + ed.value + (o.hidden ? '' : '\n\nSORTIE OBTENUE :\n' + o.textContent), { signal: ctl.signal, cache: false, onText: ({ text }) => { p.textContent = text; } })
           .then(() => markActivity()).catch((e) => { p.textContent = sampleErr(e); }).finally(() => { chk.disabled = false; });
-      }, text: 'Faire vérifier par Claude' });
-      out.append(el('div', { class: 'q' }, [el('span', { class: 'qn', text: 'Exercice ' + (i + 1) + (x.titre ? ' · ' + x.titre : '') }), el('div', { class: 'qt', style: 'white-space:pre-line', text: x.enonce }), x.attendu ? el('p', { class: 'help', style: 'margin:0', text: 'Attendu : ' + x.attendu }) : null, ed, el('div', { class: 'row-gap' }, [runB, chk, el('button', { class: 'btn sm', type: 'button', onclick: () => { ed.value = x.depart || ''; lsSet('atlas-code-' + c.id + '-' + i, ed.value); }, text: 'Réinitialiser' })]), o, fb]));
+      }, text: cap.sample ? 'Faire vérifier par Claude' : (lang === 'js' ? 'Vérifier ma sortie' : 'Comment vérifier ?') });
+      out.append(el('div', { class: 'q' }, [el('span', { class: 'qn', text: 'Exercice ' + (i + 1) + (x.titre ? ' · ' + x.titre : '') }), el('div', { class: 'qt', style: 'white-space:pre-line', text: x.enonce }), x.attendu ? el('p', { class: 'help', style: 'margin:0', text: 'Attendu : ' + x.attendu }) : null, ed, el('div', { class: 'row-gap' }, [runB, chk, solBtn, el('button', { class: 'btn sm', type: 'button', onclick: () => { ed.value = x.depart || ''; lsSet('atlas-code-' + c.id + '-' + i, ed.value); }, text: 'Réinitialiser' })]), o, fb, sol]));
     });
-    out.append(el('div', null, [el('button', { class: 'btn sm', type: 'button', onclick: () => make(true), text: 'Nouveaux exercices' })]));
+    if (cap.sample) out.append(el('div', null, [el('button', { class: 'btn sm', type: 'button', onclick: () => make(true), text: 'Nouveaux exercices' })]));
   };
   const make = (fresh) => {
     out.replaceChildren();
@@ -1960,7 +2091,7 @@ function renderOral(content, f) {
   const { c } = f;
   const body = el('div', { class: 'body' }, head(c, [el('span', { text: 'Mode oral' })]));
   content.append(el('div', { class: 'toc' }, [el('span', { class: 'mono', text: 'Oral' }), el('p', { class: 'help', text: 'Claude joue l’examinateur : il pose une question, tu réponds, il te reprend et note ta réponse sur 5, puis enchaîne.' })]), body);
-  if (!needSample(body)) return;
+  if (!cap.sample) { oralOffline(body, c); return; }
   const rules = 'Tu es examinateur à un oral de BUT MMI sur le cours ci-dessous. Réponds en français. Pose UNE seule question à la fois, ouverte, comme un prof à l’oral. Quand l’étudiant répond : donne une note sur 5, dis en deux ou trois phrases ce qui est juste et ce qui manque, puis pose la question suivante. Varie les notions. Si l’étudiant écrit « bilan », donne une note globale sur 20 et des conseils.\n\nCOURS :\n' + plainCourse(c, 30000);
   const key = 'oral-' + c.id;
   const fresh = !(chats[key] && chats[key].length);
@@ -2000,16 +2131,61 @@ async function exportAnki(c) {
   try { await cap.dl.save({ filename: slug(c.short || c.title) + '-anki.txt', data: txt }); toast('Fichier Anki enregistré'); } catch (e) {}
 }
 
+/* =================== offline helpers =================== */
+function oralOffline(body, c) {
+  const g = gen[c.id] || {};
+  const pool = shuffle([].concat((g.sujet && g.sujet.questions || []).map((q) => ({ q: q.q, a: q.attendu || '' })), (g.cards || []).map((x) => ({ q: x.front.endsWith('?') ? x.front : 'Explique : ' + x.front, a: x.back }))));
+  if (!pool.length) { needSample(body); return; }
+  body.append(el('p', { class: 'help', style: 'margin:0', text: 'Mode oral sans Claude : réponds comme à l’oral, révèle la réponse attendue, puis note-toi sur 5.' }));
+  const stage = el('div', { class: 'panel' }); body.append(stage);
+  let i = 0, total = 0, n = 0;
+  const draw = () => {
+    if (i >= Math.min(pool.length, 8)) {
+      const n20 = n ? Math.round(total / (n * 5) * 20 * 2) / 2 : 0;
+      stage.replaceChildren(el('div', { class: 'box' }, [el('div', { class: 'score', text: n20 + '/20' }), el('p', { style: 'margin:0', text: 'Bilan de l’oral sur ' + n + ' questions.' }), el('div', { class: 'row-gap', style: 'margin-top:12px' }, [el('button', { class: 'btn solid', type: 'button', onclick: () => { i = 0; total = 0; n = 0; pool.sort(() => Math.random() - .5); draw(); }, text: 'Recommencer' })])]));
+      markActivity(); return;
+    }
+    const x = pool[i];
+    const ta = el('textarea', { id: 'oral-' + i, 'aria-label': 'Ta réponse', style: 'width:100%;min-height:120px;padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--card);font-size:16px;line-height:1.55' });
+    const ans = el('div', { class: 'panel', hidden: true }, [el('p', { class: 'explain', style: 'margin:0;white-space:pre-line', text: 'Réponse attendue : ' + x.a }), el('div', { class: 'row-gap' }, [el('span', { class: 'lbl', text: 'Ta note' })].concat([0, 1, 2, 3, 4, 5].map((v) => el('button', { class: 'btn sm', type: 'button', onclick: () => { total += v; n++; i++; draw(); }, text: v + '/5' }))))]);
+    stage.replaceChildren(el('div', { class: 'q' }, [el('span', { class: 'qn', text: 'Question ' + (i + 1) + '/' + Math.min(pool.length, 8) }), el('div', { class: 'qt', text: x.q }), ta, el('div', null, [el('button', { class: 'btn', type: 'button', onclick: (e) => { ans.hidden = false; e.currentTarget.remove(); }, text: 'Voir la réponse attendue' })]), ans]));
+  };
+  draw();
+}
+function askOffline(body, c) {
+  body.append(el('p', { class: 'help', style: 'margin:0', text: 'Claude n’est pas disponible ici : cherche plutôt dans le cours et dans sa fiche. Tape des mots-clés, les passages qui les contiennent s’affichent.' }));
+  const inp = el('input', { id: 'askoff', type: 'search', class: 'search', placeholder: 'ex : this callback, valeur perçue…', autocomplete: 'off' });
+  const res = el('div', { class: 'panel', 'aria-live': 'polite' });
+  body.append(inp, res);
+  const items = [];
+  (c.sections || []).forEach((s, si) => s.b.forEach((b) => { const k = b[0], v = b[1]; if (k === 'ul' || k === 'ol') v.forEach((t) => items.push({ si, h: s.h, t })); else if (k === 'table') v.forEach((r) => items.push({ si, h: s.h, t: r.join(' — ') })); else if (typeof v === 'string') items.push({ si, h: s.h, t: v }); }));
+  const fi = gen[c.id] && gen[c.id].fiche; if (fi) (fi.definitions || []).forEach((d) => items.push({ si: -1, h: 'Fiche', t: d.terme + ' : ' + d.def }));
+  const norm = (t) => t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  inp.addEventListener('input', () => {
+    const words = norm(inp.value).split(/\s+/).filter((w) => w.length > 1);
+    res.replaceChildren();
+    if (!words.length) return;
+    const hits = items.filter((x) => { const t = norm(x.t + ' ' + x.h); return words.every((w) => t.includes(w)); }).slice(0, 6);
+    if (!hits.length) { res.append(el('p', { class: 'muted', style: 'margin:0', text: 'Rien trouvé avec ces mots. Essaie un mot plus court.' })); return; }
+    hits.forEach((x) => res.append(el('div', { class: 'box' }, [el('span', { class: 'lbl', text: x.h }), el('p', { style: 'margin:6px 0 0;white-space:pre-wrap', text: x.t.length > 600 ? x.t.slice(0, 600) + '…' : x.t }), x.si >= 0 ? el('button', { class: 'btn sm', type: 'button', style: 'margin-top:10px', onclick: () => { state.tab = 'cours'; state.section = x.si; renderOverlay(); }, text: 'Aller à cette partie' }) : null])));
+  });
+}
+
 /* =================== boot =================== */
 $('#q').addEventListener('input', (e) => { query = e.target.value; renderMain(); });
-$('#addBtn').addEventListener('click', () => { prefill = null; go({ view: 'add' }); });
+$('#addBtn').addEventListener('click', () => { prefill = null; if (!writable()) { ghAfter = { view: 'add' }; toast('Connecte ton GitHub pour pouvoir enregistrer tes cours'); go({ view: 'gh' }); return; } go({ view: 'add' }); });
 $('#importBtn').addEventListener('click', () => go({ view: 'import' }));
 $('#examBtn').addEventListener('click', () => go({ view: 'exam' }));
 $('#dueBtn').addEventListener('click', () => go({ view: 'due' }));
 me = normMe(lsGet('atlas-me', {})); srs = lsGet('atlas-srs', {});
 
-let dataReady = false;
-fetch('data/courses.json', { cache: 'no-store' }).then((r) => r.json()).then((d) => { DB = d; dataReady = true; renderMain(); fromHash(); })
+let dataReady = false, GENBASE = {};
+events = lsGet('atlas-events', []);
+updateGhBtn();
+canWrite = ghOn(); updateWriteUi();
+fetch('data/generated.json', { cache: 'no-store' }).then((r) => r.ok ? r.json() : {}).then((g) => { GENBASE = g || {}; Object.keys(GENBASE).forEach((k) => { gen[k] = Object.assign({}, GENBASE[k], gen[k] || {}); }); if (dataReady) { renderMain(); if (state.view !== 'map') renderOverlay(); } }).catch(() => {});
+const loadCourses = () => (!(window.claude && window.claude.use) && ghOn() ? ghLoad().catch(() => fetch('data/courses.json', { cache: 'no-store' }).then((r) => r.json())) : fetch('data/courses.json', { cache: 'no-store' }).then((r) => r.json()));
+loadCourses().then((d) => { DB = d; dataReady = true; renderMain(); fromHash(); })
   .catch(() => { $('#counts').textContent = 'Impossible de charger les cours'; $('#rows').append(el('p', { style: 'padding:18px 8px', text: 'Les cours n’ont pas pu être chargés. Recharge la page.' })); });
 
 async function resolveIds(list) {
@@ -2025,13 +2201,13 @@ if (window.claude && window.claude.use) {
   use('artifact').then(async (a) => {
     cap.art = a; const u = await use('user'); cap.user = u;
     let edit = !!a; if (u) { try { edit = a && (await u.canEdit()) !== false; } catch (e) {} }
-    canWrite = !!edit; updateWriteUi();
+    artWritable = !!edit; canWrite = artWritable || ghOn(); updateWriteUi();
     if (canWrite && /^#(ajouter|importer)$/.test(location.hash)) fromHash();
     if (u) { try { uid = await u.id(); } catch (e) {} }
     const db = await use('db'); cap.db = db;
     if (db) {
       db.collection('events').onSnapshot((snap) => { events = snap.docs.map((d) => Object.assign({ id: d.id }, d.data())); if (dataReady) { renderMain(); } }, () => {});
-      db.collection('gen').onSnapshot((snap) => { snap.docs.forEach((d) => { gen[d.id] = d.data(); }); if (dataReady) renderStats(); }, () => {});
+      db.collection('gen').onSnapshot((snap) => { snap.docs.forEach((d) => { gen[d.id] = Object.assign({}, GENBASE[d.id] || {}, d.data()); }); if (dataReady) renderStats(); }, () => {});
       if (uid) {
         db.doc('data/users/' + uid + '/me').get().then((s) => { if (s.exists) { me = normMe(s.data()); lsSet('atlas-me', me); if (dataReady) renderMain(); } }).catch(() => {});
         db.collection('scores').onSnapshot((snap) => { scores = snap.docs.map((d) => Object.assign({ id: d.id }, d.data())); resolveIds(scores.map((x) => x.id)); if (dataReady) renderDash(); }, () => {});
